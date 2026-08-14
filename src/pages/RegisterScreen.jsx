@@ -123,7 +123,7 @@ export default function RegisterScreen() {
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+971 5xx xxx xxx"
+            placeholder="+91 xx xxxxxxxx"
             className="px-3 py-2.5 rounded-lg bg-pitch-950 border border-pitch-line outline-none focus:border-gold/60"
           />
         </div>
