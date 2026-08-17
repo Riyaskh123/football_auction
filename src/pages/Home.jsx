@@ -13,7 +13,7 @@ export default function Home() {
         navigate('/')
       }}>Logout</button>
       <div className="text-center">
-        <p className="tracking-[0.3em] text-gold text-sm mb-3 font-semibold">MATCH DAY</p>
+        <p className="tracking-[0.3em] text-gold text-sm mb-3 font-semibold">KPL</p>
         <h1 className="font-display text-6xl md:text-7xl tracking-wide">AUCTION ROOM</h1>
         <p className="text-floodlight/60 mt-4 max-w-md mx-auto">
           Open <span className="text-gold">Display</span> on the projector, and{' '}

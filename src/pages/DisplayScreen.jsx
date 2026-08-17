@@ -45,7 +45,7 @@ export default function DisplayScreen() {
       {/* header */}
       <header className="flex items-center justify-between px-8 md:px-14 pt-4 relative z-10">
         <div>
-          <p className="tracking-[0.3em] text-gold text-xs font-semibold">{availableCount > 0 ? 'MATCH DAY' : 'FINAL SQUADS'}</p>
+          <p className="tracking-[0.3em] text-gold text-xs font-semibold">{availableCount > 0 ? 'KPL ' : 'FINAL SQUADS'}</p>
           <h1 className="font-display text-3xl md:text-4xl tracking-wide">AUCTION ROOM</h1>
         </div>
         <div className="text-right font-mono text-sm text-floodlight/50 tabular">

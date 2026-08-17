@@ -85,7 +85,7 @@ export default function RegisterScreen() {
         className="w-full max-w-md rounded-2xl border border-pitch-line bg-pitch-800/60 p-6 flex flex-col gap-5"
       >
         <div className="text-center mb-1">
-          <p className="tracking-[0.3em] text-gold text-xs font-semibold mb-2">MATCH DAY</p>
+          <p className="tracking-[0.3em] text-gold text-xs font-semibold mb-2">KPL</p>
           <h1 className="font-display text-3xl tracking-wide">PLAYER REGISTRATION</h1>
           <p className="text-floodlight/50 text-sm mt-2">
             Fill in your details to join the auction pool.

@@ -46,7 +46,7 @@ export default function ResultsScreen() {
     <div className="min-h-screen px-4 md:px-8 py-6 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6 print:hidden">
         <div>
-          <p className="tracking-[0.3em] text-gold text-xs font-semibold">MATCH DAY</p>
+          <p className="tracking-[0.3em] text-gold text-xs font-semibold">KPL</p>
           <h1 className="font-display text-2xl md:text-3xl tracking-wide">FINAL SQUADS</h1>
         </div>
         <div className="flex gap-3">
