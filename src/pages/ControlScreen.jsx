@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuctionData } from '../hooks/useAuctionData'
 import { useRegistrations } from '../hooks/useRegistrations'
@@ -15,6 +15,7 @@ export default function ControlScreen() {
   const pendingCount = registrations.filter((r) => r.status === 'pending').length
   const [manualAmount, setManualAmount] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
+  const manualInputRef = useRef(null)
 
   const currentPlayer = useMemo(
     () => players.find((p) => p.id === auction.currentPlayerId) || null,
@@ -27,6 +28,46 @@ export default function ControlScreen() {
 
   const isEmpty = !loading && teams.length === 0 && players.length === 0
   const isIdleState = auction.status === 'idle' || auction.status === 'sold' || auction.status === 'unsold'
+
+  const submitManualBid = () => {
+    if (!manualAmount || !leadingTeam) return
+    actions.placeBid(leadingTeam.id, Number(manualAmount))
+    setManualAmount('')
+  }
+
+  // Type a digit anywhere on the page to jump straight into the manual
+  // amount field (no need to click it first), keep typing to build the
+  // number, Backspace to correct it, Enter to submit to the leading team.
+  useEffect(() => {
+    if (!(currentPlayer && auction.status === 'bidding')) return
+
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+
+      const active = document.activeElement
+      const isTypingElsewhere =
+        active &&
+        (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') &&
+        active !== manualInputRef.current
+      if (isTypingElsewhere) return
+
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault()
+        manualInputRef.current?.focus()
+        setManualAmount((prev) => prev + e.key)
+      } else if (e.key === 'Backspace') {
+        e.preventDefault()
+        manualInputRef.current?.focus()
+        setManualAmount((prev) => prev.slice(0, -1))
+      } else if (e.key === 'Enter') {
+        e.preventDefault()
+        submitManualBid()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentPlayer, auction.status, manualAmount, leadingTeam, actions])
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-floodlight/40">Connecting…</div>
@@ -155,6 +196,7 @@ export default function ControlScreen() {
           ))}
           <div className="flex items-center gap-2 ml-auto">
             <input
+              ref={manualInputRef}
               type="number"
               value={manualAmount}
               onChange={(e) => setManualAmount(e.target.value)}
@@ -162,11 +204,7 @@ export default function ControlScreen() {
               className="w-36 px-3 py-1.5 rounded-lg bg-pitch-950 border border-pitch-line text-sm outline-none focus:border-gold/60"
             />
             <button
-              onClick={() => {
-                if (!manualAmount || !leadingTeam) return
-                actions.placeBid(leadingTeam.id, Number(manualAmount))
-                setManualAmount('')
-              }}
+              onClick={submitManualBid}
               disabled={!manualAmount || !leadingTeam}
               className="px-3 py-1.5 rounded-lg bg-pitch-700 border border-pitch-line text-sm disabled:opacity-30 hover:bg-pitch-600 transition-colors"
             >

@@ -34,7 +34,7 @@ export default function DisplayScreen() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <video src={video} autoPlay loop muted className="absolute z-0 top-0 left-0 w-full h-full object-cover opacity-25" />
-      <img src={logo} alt="logo" className={`absolute top-[50%] ${availableCount === 0 ? 'left-[50%] translate-x-[-50%] w-[300px] opacity-50' : 'left-4 w-[200px]'} translate-y-[-50%] `} />
+      <img src={logo} alt="logo" className={`absolute top-[20%] w-[150px] left-[50%] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-[300px] opacity-50' : 'left-4 w-[200px]'} translate-y-[-50%] `} />
 
       {availableCount === 0 &&
         <div className='absolute top-20 left-4 z-50 w-full overflow-auto'>
@@ -77,7 +77,7 @@ export default function DisplayScreen() {
 
       {
         availableCount != 0 &&
-        <div className="fixed right-0 bottom-0">
+        <div className=" md:fixed right-0 bottom-0">
           <TeamStrip teams={teams} leadingTeamId={auction.currentBidTeamId} />
         </div>
       }

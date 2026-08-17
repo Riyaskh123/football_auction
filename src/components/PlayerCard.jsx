@@ -3,13 +3,13 @@ export default function PlayerCard({ player, animationDelay = 0 }) {
   return (
     <div
       key={player.id}
-      className="relative w-[340px] md:w-[380px] animate-zoom-in"
+      className="relative w-[240px] md:w-[380px] animate-zoom-in"
       style={{ animationDelay: `${animationDelay}ms` }}
 
     >
       <div className="relative rounded-[24px] bg-pitch-800/30 border border-pitch-line/50 overflow-hidden animate-glow-pulse">
         {/* photo */}
-        <div className="relative h-[0px] md:h-[350px] bg-pitch-700/30 overflow-hidden">
+        <div className="relative h-[225px] md:h-[350px] bg-pitch-700/30 overflow-hidden">
           <img
             src={player.photoUrl}
             alt={player.name}
