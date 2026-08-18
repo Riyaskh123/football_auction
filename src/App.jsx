@@ -7,8 +7,10 @@ import AdminRegistrations from './pages/AdminRegistrations.jsx'
 import ResultsScreen from './pages/ResultsScreen.jsx'
 import TeamRegisterScreen from './pages/TeamRegisterScreen.jsx'
 import AdminTeamRegistrations from './pages/AdminTeamRegistrations.jsx'
-import Login from './pages/Login.jsx'
 import PlayersListScreen from './pages/PlayersListScreen.jsx'
+import AdminFixtures from './pages/AdminFixtures.jsx'
+import FixturesScreen from './pages/FixturesScreen.jsx'
+import Login from './pages/Login.jsx'
 
 export default function App() {
   return (
@@ -23,6 +25,8 @@ export default function App() {
       <Route path="/register/team" element={<TeamRegisterScreen />} />
       <Route path="/admin/team-registrations" element={<AdminTeamRegistrations />} />
       <Route path="/players" element={<PlayersListScreen />} />
+      <Route path="/admin/fixtures" element={<AdminFixtures />} />
+      <Route path="/fixtures" element={<FixturesScreen />} />
     </Routes>
   )
 }

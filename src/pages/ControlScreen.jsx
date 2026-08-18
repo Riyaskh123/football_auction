@@ -101,15 +101,40 @@ export default function ControlScreen() {
         </div>
         <div className="flex items-center gap-4">
           <Link
+            to="/dashboard"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            to="/results"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
+          >
+            Final squads
+          </Link>
+          <Link
+            to="/players"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
+          >
+            Player list
+          </Link>
+          <Link
+            to="/admin/fixtures"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
+          >
+            Fixtures
+          </Link>
+          <Link
+            to="/admin/team-registrations"
+            className="relative px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
+          >
+            Teams
+          </Link>
+          <Link
             to="/admin/registrations"
             className="relative px-4 py-2 rounded-lg border border-pitch-line text-xs hover:border-gold/50 transition-colors"
           >
             Registrations
-            {pendingCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gold text-pitch-950 text-[10px] font-bold flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
           </Link>
           <div className="font-mono text-xs text-floodlight/50 tabular text-right">
             <div>AVAILABLE {availableCount}</div>
