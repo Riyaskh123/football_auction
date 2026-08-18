@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import registration from '../assets/registration.png';
 import team from '../assets/team.png';
 import teamreview from '../assets/team-review.png';
@@ -12,6 +12,7 @@ import score from '../assets/score.png';
 
 
 export default function Home() {
+  const navigate = useNavigate()
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-10 px-6">
       <div className="text-center">
@@ -21,6 +22,10 @@ export default function Home() {
           Open <span className="text-gold">Display</span> on the projector, and{' '}
           <span className="text-gold">Control</span> on the auctioneer's device.
         </p>
+        <button className='absolute right-5 text-red top-5 cursor-pointer' onClick={() =>{
+          localStorage.removeItem('islogged')
+          navigate('/')
+        }}>Logout</button>
       </div>
       <div className="flex flex-col sm:flex-row gap-5">
         <Link
