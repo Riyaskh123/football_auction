@@ -3,12 +3,12 @@ import PlayerCard from '../components/PlayerCard.jsx'
 import Scoreboard from '../components/Scoreboard.jsx'
 import TeamStrip from '../components/TeamStrip.jsx'
 import SoldOverlay from '../components/SoldOverlay.jsx'
-import logo from '../logo.png';
-import video from '../bg.mp4';
+import logo from '../assets/logo.png';
+import video from '../assets/bg.webm';
 import FinalDisplayList from '../components/FinalDisplayList.jsx'
 import IntroOverlay from '../components/IntroOverlay.jsx'
 import { useIntroOnPlayerChange } from '../hooks/useIntroOnPlayerChange'
-import introVideo from '../intro.webm'
+import introVideo from '../assets/intro.webm'
 
 export default function DisplayScreen() {
   const { teams, players, auction, loading } = useAuctionData()
@@ -34,7 +34,7 @@ export default function DisplayScreen() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <video src={video} autoPlay loop muted className="absolute z-0 top-0 left-0 w-full h-full object-cover opacity-25" />
-      <img src={logo} alt="logo" className={`absolute top-[20%] w-[150px] left-[50%] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-[300px] opacity-50' : 'left-4 w-[200px]'} translate-y-[-50%] `} />
+      <img src={logo} alt="logo" className={`absolute top-[20%] w-[150px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-[300px] opacity-50' : 'left-[100px] w-[200px]'} translate-y-[-50%] `} />
 
       {availableCount === 0 &&
         <div className='absolute top-20 left-4 z-50 w-full overflow-auto'>
