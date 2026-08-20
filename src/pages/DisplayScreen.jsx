@@ -77,7 +77,7 @@ export default function DisplayScreen() {
 
       {
         availableCount != 0 &&
-        <div className=" md:fixed right-0 bottom-0">
+        <div className=" md:fixed right-2 bottom-0">
           <TeamStrip teams={teams} leadingTeamId={auction.currentBidTeamId} />
         </div>
       }

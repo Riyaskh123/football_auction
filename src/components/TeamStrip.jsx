@@ -1,14 +1,14 @@
 export default function TeamStrip({ teams, leadingTeamId }) {
   return (
     <div className="w-full no-scrollbar">
-      <div className="grid grid-cols-2 md:flex md:flex-col items-center justify-center gap-2 md:gap-3 px-4 py-2">
+      <div className="grid grid-cols-2 md:flex md:flex-col items-center justify-center gap-1 md:gap-1 px-2 py-2">
         {teams.map((team) => {
           const remaining = team.budget - team.spent
           const isLeading = team.id === leadingTeamId
           return (
             <div
               key={team.id}
-              className={`flex w-full items-center gap-4 px-3 py-2 rounded-2xl border transition-all duration-300 ${isLeading
+              className={`flex w-full items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all duration-300 ${isLeading
                 ? 'border-gold bg-gold/10 scale-105 md:scale-110 animate-glow-pulse'
                 : 'border-pitch-line bg-pitch-800/60'
                 }`}
