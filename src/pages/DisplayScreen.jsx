@@ -37,7 +37,7 @@ export default function DisplayScreen() {
       <img src={logo} alt="logo" className={`absolute top-[20%] w-[150px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-[300px] opacity-50' : 'left-[150px] w-[200px]'} translate-y-[-50%]`} />
 
       {availableCount === 0 &&
-        <div className='absolute top-20 left-4 z-50 w-full overflow-auto'>
+        <div className='absolute top-20 left-0 md:left-4 z-50 w-full overflow-auto'>
           <FinalDisplayList />
         </div>
       }
@@ -54,7 +54,7 @@ export default function DisplayScreen() {
         </div>
       </header>
 
-      <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={10000} />
+      {availableCount !=0 && <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={10000} />}
 
       {
         availableCount != 0 &&

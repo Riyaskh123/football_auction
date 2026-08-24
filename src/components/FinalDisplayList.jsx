@@ -24,7 +24,7 @@ export default function DisplayFinalScreen() {
     }
 
     return (
-        <div className="min-h-screen w-full flex flex-col px-2 md:px-4 py-5">
+        <div className="min-h-[90vh] max-h-[90vh] w-full px-2 md:px-4 py-5 overflow-scroll">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {squads.map(({ team, players: squad }, teamIdx) => {
                     const remaining = team.budget - (team.spent || 0)
