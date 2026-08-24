@@ -45,3 +45,30 @@ body {
     color: black !important;
   }
 }
+
+.marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 1rem;
+    animation: squad-marquee 35s linear infinite;
+    will-change: transform;
+}
+
+/* .marquee-track:hover {
+    animation-play-state: paused;
+} */
+
+@keyframes squad-marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(calc(-50% - 0.5rem));
+    }
+}
