@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useRegistrations } from '../hooks/useRegistrations'
 import { uploadToCloudinary } from '../utils/cloudinary'
 
-const positions = ['GK', 'DEF', 'MID', 'FWD']
+const positions = ['GK', 'DEF', 'FWD']
 
 export default function RegisterScreen() {
   const { actions } = useRegistrations()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [position, setPosition] = useState('MID')
+  const [position, setPosition] = useState('GK')
   const [jerseyNo, setJerseyNo] = useState('')
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
@@ -31,6 +31,19 @@ export default function RegisterScreen() {
       setError('Please enter your name.')
       return
     }
+    if (photoPreview===null) {
+      setError('Please upload a photo.')
+      return
+    }
+    // if(!phone.trim()){
+    //   setError('Please enter your phone number.')
+    //   return
+    // }
+    if(!position.trim()){
+      setError('Please enter your position.')
+      return
+    }
+
     setSubmitting(true)
     try {
       let photoUrl = null

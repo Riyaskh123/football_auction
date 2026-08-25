@@ -31,11 +31,14 @@ export const samplePlayers = Array.from({ length: 24 }).map((_, i) => {
   }
 })
 
+
 export const defaultAuctionState = {
   currentPlayerId: null,
   currentBid: 0,
   currentBidTeamId: null,
-  status: 'idle', // idle | bidding | sold | unsold
+  status: 'idle',
   bidStep: 50,
+  minSquadSize: 4,
+  reserveAmount: 100,
   updatedAt: null
 }

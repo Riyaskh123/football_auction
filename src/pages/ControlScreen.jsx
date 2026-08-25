@@ -15,6 +15,8 @@ export default function ControlScreen() {
   const pendingCount = registrations.filter((r) => r.status === 'pending').length
   const [manualAmount, setManualAmount] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
+  const [minSquadSize, setMinSquadSize] = useState(auction.minSquadSize)
+  const [reserveAmount, setReserveAmount] = useState(auction.reserveAmount)
   const manualInputRef = useRef(null)
 
   const currentPlayer = useMemo(
@@ -143,6 +145,24 @@ export default function ControlScreen() {
         </div>
       </div>
 
+      {/* squad size / reserve settings */}
+      <div className="flex flex-wrap items-center gap-3 justify-end">
+        <span className="text-xs text-floodlight/50">MIN SQUAD SIZE</span>
+        <input
+          type="number"
+          value={minSquadSize}
+          onChange={(e) => setMinSquadSize(e.target.value)}
+          className="w-16 px-2 py-1.5 rounded-lg bg-pitch-950 border border-pitch-line text-sm text-center"
+        />
+        <span className="text-xs text-floodlight/50 ml-4">RESERVE PER SLOT</span>
+        <input
+          type="number"
+          value={reserveAmount}
+          onChange={(e) => setReserveAmount(e.target.value)}
+          className="w-20 px-2 py-1.5 rounded-lg bg-pitch-950 border border-pitch-line text-sm text-center"
+        />
+      </div>
+
       {/* current player + primary actions */}
       <div className="rounded-2xl border border-pitch-line bg-pitch-800/60 p-5 flex flex-col gap-4">
         {currentPlayer ? (
@@ -170,7 +190,7 @@ export default function ControlScreen() {
 
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => actions.nextPlayer()}
+            onClick={() => actions.nextPlayer(minSquadSize,reserveAmount)}
             disabled={availableCount === 0}
             className="px-5 py-3 rounded-xl bg-gold text-pitch-950 font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gold-light transition-colors"
           >
@@ -212,8 +232,8 @@ export default function ControlScreen() {
               key={step}
               onClick={() => actions.setBidStep(step)}
               className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${auction.bidStep === step
-                  ? 'border-gold text-gold bg-gold/10'
-                  : 'border-pitch-line text-floodlight/60 hover:border-floodlight/30'
+                ? 'border-gold text-gold bg-gold/10'
+                : 'border-pitch-line text-floodlight/60 hover:border-floodlight/30'
                 }`}
             >
               +{step}
@@ -245,21 +265,28 @@ export default function ControlScreen() {
           {teams.map((team) => {
             const remaining = team.budget - team.spent
             const isLeading = team.id === auction.currentBidTeamId
-            const wouldExceed = auction.currentBid + (auction.bidStep || 50) > remaining
+            const squadCount = players.filter((p) => p.soldTo === team.id && p.status === 'sold').length
+            const slotsStillNeeded = Math.max(0, (auction.minSquadSize || 0) - (squadCount + 1))
+            const reserveNeeded = slotsStillNeeded * (auction.reserveAmount || 0)
+            const nextBid = auction.currentBid + (auction.bidStep || 50)
+            const wouldExceed = nextBid > remaining
+            const wouldBreakReserve = nextBid + reserveNeeded > remaining
+            const disabled = (wouldExceed || wouldBreakReserve) && !isLeading
+
             return (
               <button
                 key={team.id}
                 onClick={() => actions.placeBid(team.id)}
-                disabled={wouldExceed && !isLeading}
-                className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors ${isLeading
-                    ? 'border-gold bg-gold/10'
-                    : 'border-pitch-line bg-pitch-800/50 hover:border-floodlight/30'
+                disabled={disabled}
+                title={wouldBreakReserve && !wouldExceed ? `Needs to keep ${reserveNeeded} reserved for ${slotsStillNeeded} more player(s)` : ''}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors ${isLeading ? 'border-gold bg-gold/10' : 'border-pitch-line bg-pitch-800/50 hover:border-floodlight/30'
                   } disabled:opacity-30 disabled:cursor-not-allowed`}
               >
                 <img src={team.logoUrl} alt={team.name} className="w-10 h-10 rounded-full" />
                 <span className="text-xs font-semibold text-center">{team.name}</span>
-                <span className="text-[11px] font-mono text-floodlight/40 tabular">
-                  {remaining.toLocaleString()} left
+                <span className="text-[11px] font-mono text-floodlight/40 tabular">{remaining.toLocaleString()} left</span>
+                <span className="text-[10px] font-mono text-floodlight/30 tabular">
+                  {squadCount}/{auction.minSquadSize} squad
                 </span>
               </button>
             )
@@ -270,18 +297,21 @@ export default function ControlScreen() {
       {/* player queue */}
       <div className="rounded-2xl border border-pitch-line bg-pitch-800/40 p-4 flex-1 overflow-auto">
         <p className="text-xs tracking-widest text-floodlight/40 mb-3">PLAYER QUEUE</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {players.map((p) => (
             <div
               key={p.id}
               className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm border ${p.status === 'sold'
-                  ? 'border-gold/30 bg-gold/5 text-floodlight/50'
-                  : p.status === 'unsold'
-                    ? 'border-live/30 bg-live/5 text-floodlight/50'
-                    : 'border-pitch-line text-floodlight/80'
+                ? 'border-gold/30 bg-gold/5 text-floodlight/50'
+                : p.status === 'unsold'
+                  ? 'border-live/30 bg-live/5 text-floodlight/50'
+                  : 'border-pitch-line text-floodlight/80'
                 }`}
             >
-              <span>#{p.jerseyNo} {p.name}</span>
+              <div className="flex items-center gap-1">
+                <img src={p.photoUrl} alt={p.name} className="w-10 h-10 rounded-full bg-white object-cover" />
+                <span>#{p.jerseyNo} {p.name}</span>
+              </div>
               <span className="font-mono text-xs tabular">
                 {p.status === 'sold' ? p.soldPrice : p.status === 'unsold' ? 'UNSOLD' : p.basePrice}
               </span>

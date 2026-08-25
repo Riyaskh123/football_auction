@@ -5,6 +5,7 @@ import {
   onSnapshot,
   addDoc,
   updateDoc,
+  deleteDoc,
   runTransaction,
   serverTimestamp
 } from 'firebase/firestore'
@@ -36,8 +37,17 @@ export function useRegistrations() {
     })
   }, [])
 
-  // Approving writes a new doc into `players` (the pool the auction draws
-  // from) using the admin-set base price, then marks the registration approved.
+  // Edit a pending registration's details before approving it.
+  const updateRegistration = useCallback(async (id, patch) => {
+    await updateDoc(doc(db, 'registrations', id), patch)
+  }, [])
+
+  // Remove a registration entirely (e.g. duplicate or no-show) — does not
+  // touch the players collection, only relevant before it's been approved.
+  const deleteRegistration = useCallback(async (id) => {
+    await deleteDoc(doc(db, 'registrations', id))
+  }, [])
+
   const approveRegistration = useCallback(async (registration, basePrice) => {
     const regRef = doc(db, 'registrations', registration.id)
     const playerRef = doc(collection(db, 'players'))
@@ -57,12 +67,22 @@ export function useRegistrations() {
   }, [])
 
   const rejectRegistration = useCallback(async (registrationId) => {
+    const playerId = doc(db, 'registrations', registrationId).playerId
+    if(playerId){
+      await deleteDoc(doc(db, 'players', playerId))
+    }
     await updateDoc(doc(db, 'registrations', registrationId), { status: 'rejected' })
   }, [])
 
   return {
     registrations,
     loading,
-    actions: { submitRegistration, approveRegistration, rejectRegistration }
+    actions: {
+      submitRegistration,
+      updateRegistration,
+      deleteRegistration,
+      approveRegistration,
+      rejectRegistration
+    }
   }
 }

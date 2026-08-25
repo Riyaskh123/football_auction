@@ -51,7 +51,7 @@ export function useAuctionData() {
     return true
   }, [])
 
-  const nextPlayer = useCallback(async () => {
+  const nextPlayer = useCallback(async (minSquadSize = 5, reserveAmount = 100) => {
     const available = players.filter((p) => p.status === 'available')
     if (available.length === 0) return { ok: false, reason: 'no-players' }
     const pick = available[Math.floor(Math.random() * available.length)]
@@ -61,12 +61,28 @@ export function useAuctionData() {
         currentBid: pick.basePrice,
         currentBidTeamId: null,
         status: 'bidding',
-        bidStep: auction.bidStep || 50,
+        bidStep: auction.bidStep || 100,
+        minSquadSize: minSquadSize,
+        reserveAmount: reserveAmount,
         updatedAt: serverTimestamp()
       })
     })
     return { ok: true, player: pick }
   }, [players, auction.bidStep])
+
+  // src/hooks/useAuctionData.js — two new actions + updated placeBid
+
+  const setMinSquadSize = useCallback(async (n) => {
+    await runTransaction(db, async (tx) => {
+      tx.update(AUCTION_DOC, { minSquadSize: Number(n) })
+    })
+  }, [])
+
+  const setReserveAmount = useCallback(async (n) => {
+    await runTransaction(db, async (tx) => {
+      tx.update(AUCTION_DOC, { reserveAmount: Number(n) })
+    })
+  }, [])
 
   const placeBid = useCallback(
     async (teamId, customAmount) => {
@@ -75,7 +91,17 @@ export function useAuctionData() {
       const step = auction.bidStep || 50
       const nextBid = customAmount ?? auction.currentBid + step
       const remaining = team.budget - team.spent
+
+      // Reserve check: after winning the player on the block, how many more
+      // players does this team still need to hit its minimum squad size?
+      // That many slots must stay affordable at reserveAmount each.
+      const squadCount = players.filter((p) => p.soldTo === teamId && p.status === 'sold').length
+      const slotsStillNeeded = Math.max(0, (auction.minSquadSize || 0) - (squadCount + 1))
+      const reserveNeeded = slotsStillNeeded * (auction.reserveAmount || 0)
+
       if (nextBid > remaining) return { ok: false, reason: 'over-budget' }
+      if (nextBid + reserveNeeded > remaining) return { ok: false, reason: 'reserve-violation' }
+
       await runTransaction(db, async (tx) => {
         tx.update(AUCTION_DOC, {
           currentBid: nextBid,
@@ -86,7 +112,7 @@ export function useAuctionData() {
       })
       return { ok: true }
     },
-    [teams, auction.currentBid, auction.bidStep]
+    [teams, players, auction.currentBid, auction.bidStep, auction.minSquadSize, auction.reserveAmount]
   )
 
   const setBidStep = useCallback(async (step) => {
@@ -172,6 +198,8 @@ export function useAuctionData() {
     actions: {
       seedIfEmpty,
       nextPlayer,
+      setMinSquadSize,
+      setReserveAmount,
       placeBid,
       setBidStep,
       resetBid,
