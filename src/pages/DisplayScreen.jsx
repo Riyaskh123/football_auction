@@ -34,7 +34,7 @@ export default function DisplayScreen() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <video src={video} autoPlay loop muted className="absolute z-0 top-0 left-0 w-full h-full object-cover opacity-25" />
-      <img src={logo} alt="logo" className={`absolute top-[20%] w-[150px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-[300px] opacity-50' : 'left-[150px] w-[200px]'} translate-y-[-50%]`} />
+      <img src={logo} alt="logo" className={`absolute top-[18%] left-[50%] w-[140px] md:w-[250px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]  opacity-50' : 'md:left-[150px]'} translate-y-[-50%]`} />
 
       {availableCount === 0 &&
         <div className='absolute top-20 left-0 z-50 w-full overflow-auto'>
@@ -45,7 +45,7 @@ export default function DisplayScreen() {
       {/* header */}
       <header className="flex items-center justify-between px-8 md:px-14 pt-4 relative z-10">
         <div>
-          <p className="tracking-[0.3em] text-gold text-xs font-semibold">{availableCount > 0 ? 'KPL ' : 'FINAL SQUADS'}</p>
+          <p className="tracking-[0.2em] text-gold text-xs font-semibold">{availableCount > 0 ? 'Kodikuthumala Premier League ' : 'FINAL SQUADS'}</p>
           <h1 className="font-display text-3xl md:text-4xl tracking-wide">AUCTION ROOM</h1>
         </div>
         <div className="text-right font-mono text-sm text-floodlight/50 tabular">

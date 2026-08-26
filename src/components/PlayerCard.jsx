@@ -29,7 +29,7 @@ export default function PlayerCard({ player, animationDelay = 0 }) {
           <h2 className="font-display text-xl md:text-2xl tracking-wide leading-tight">
             {player.name}
           </h2>
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-1 flex items-center justify-between">
             <span className="text-xs tracking-[0.25em] text-floodlight/50">BASE PRICE</span>
             <span className="font-mono text-xl text-gold tabular">
               {player.basePrice.toLocaleString()}
