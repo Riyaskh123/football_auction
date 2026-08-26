@@ -42,7 +42,9 @@ export function useTeamRegistrations() {
   const updateTeamRegistration = useCallback(async (id, patch) => {
     const cleaned = { ...patch }
     if (cleaned.shortName) cleaned.shortName = cleaned.shortName.toUpperCase()
+    const registration = await getDoc(doc(db, 'teamRegistrations', id))
     await updateDoc(doc(db, 'teamRegistrations', id), cleaned)
+    await updateDoc(doc(db, 'teams', registration.data().teamId), cleaned)
   }, [])
 
   // Remove a team registration entirely (e.g. duplicate submission).
