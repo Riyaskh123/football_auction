@@ -20,7 +20,18 @@ export default function PlayersListScreen() {
     return players
       .filter((p) => (statusFilter === 'all' ? true : p.status === statusFilter))
       .filter((p) => p.name.toLowerCase().includes(search.trim().toLowerCase()))
-      .sort((a, b) => (a.jerseyNo ?? 999) - (b.jerseyNo ?? 999))
+      .sort((a, b) => {
+        const valA = a.jerseyNo;
+        const valB = b.jerseyNo;
+        const hasA = valA !== null && valA !== undefined && valA !== '';
+        const hasB = valB !== null && valB !== undefined && valB !== '';
+        
+        if (!hasA && !hasB) return 0;
+        if (!hasA) return 1;
+        if (!hasB) return -1;
+        
+        return String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' });
+      })
   }, [players, statusFilter, search])
 
   if (loading) {

@@ -35,12 +35,12 @@ export default function RegisterScreen() {
       setError('Please upload a photo.')
       return
     }
-    // if(!phone.trim()){
-    //   setError('Please enter your phone number.')
-    //   return
-    // }
+    if(!jerseyNo.trim()){
+      setError('Please enter KPL register Number.')
+      return
+    }
     if(!position.trim()){
-      setError('Please enter your position.')
+      setError('Please Select position.')
       return
     }
 

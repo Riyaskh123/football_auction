@@ -24,7 +24,7 @@ function ReviewCard({ registration, onApprove, onReject, onUpdate, onDelete, isA
       name,
       phone: phone || null,
       position,
-      jerseyNo: jerseyNo ? Number(jerseyNo) : null
+      jerseyNo: jerseyNo ? String(jerseyNo).trim() : null
     })
     setBusy(false)
     setEditing(false)
