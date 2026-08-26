@@ -75,20 +75,31 @@ export default function ControlScreen() {
     return <div className="min-h-screen flex items-center justify-center text-floodlight/40">Connecting…</div>
   }
 
+  // if (isEmpty) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
+  //       <h1 className="font-display text-3xl tracking-wide">NO DATA YET</h1>
+  //       <p className="text-floodlight/50 max-w-sm">
+  //         Your Firestore database is empty. Load the built-in sample teams and players to try the app,
+  //         then replace them with your real roster in the Firebase console.
+  //       </p>
+  //       <button
+  //         onClick={() => actions.seedIfEmpty()}
+  //         className="px-6 py-3 rounded-xl bg-gold text-pitch-950 font-semibold hover:bg-gold-light transition-colors"
+  //       >
+  //         Load sample data
+  //       </button>
+  //     </div>
+  //   )
+  // }
+
   if (isEmpty) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <h1 className="font-display text-3xl tracking-wide">NO DATA YET</h1>
+        <h1 className="font-display text-3xl tracking-wide">NO TEAMS REGISTERED </h1>
         <p className="text-floodlight/50 max-w-sm">
-          Your Firestore database is empty. Load the built-in sample teams and players to try the app,
-          then replace them with your real roster in the Firebase console.
+          Please register teams to proceed to the auction.
         </p>
-        <button
-          onClick={() => actions.seedIfEmpty()}
-          className="px-6 py-3 rounded-xl bg-gold text-pitch-950 font-semibold hover:bg-gold-light transition-colors"
-        >
-          Load sample data
-        </button>
       </div>
     )
   }
@@ -271,13 +282,13 @@ export default function ControlScreen() {
             const nextBid = auction.currentBid + (auction.bidStep || 100)
             const wouldExceed = nextBid > remaining
             const wouldBreakReserve = reserveNeeded >= (remaining - auction.currentBid)
-            const disabled = (wouldExceed || wouldBreakReserve) && !isLeading
+            const disabled = (wouldExceed || wouldBreakReserve || squadCount == auction.minSquadSize) && !isLeading
             
             return (
               <button
                 key={team.id}
                 onClick={() => {
-                  actions.placeBid(team.id)}
+                  !isLeading && actions.placeBid(team.id)}
                 }
                 disabled={disabled}
                 title={wouldBreakReserve && !wouldExceed ? `Needs to keep ${reserveNeeded} reserved for ${slotsStillNeeded} more player(s)` : ''}

@@ -67,9 +67,9 @@ export default function DisplayScreen() {
           ) : (
             <div className="text-center animate-float-slow">
               <p className="font-display text-4xl md:text-5xl tracking-wide text-floodlight/70">
-                WAITING FOR PLAYER
+                AUCTION NOT STARTED
               </p>
-              <p className="text-floodlight/40 mt-3">Auctioneer will call the player shortly</p>
+              <p className="text-floodlight/40 mt-3">Please wait for the auction to start</p>
             </div>
           )}
         </main>
