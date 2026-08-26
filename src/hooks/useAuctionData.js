@@ -51,8 +51,12 @@ export function useAuctionData() {
     return true
   }, [])
 
-  const nextPlayer = useCallback(async (minSquadSize = 5, reserveAmount = 100) => {
-    const available = players.filter((p) => p.status === 'available')
+  const nextPlayer = useCallback(async (minSquadSize = 9, reserveAmount = 100) => {
+    let available = players.filter((p) => p.status === 'available')
+    if (available.length == 0) {
+      available = players.filter((p) => p.status === 'unsold')
+    }
+    
     if (available.length === 0) return { ok: false, reason: 'no-players' }
     const pick = available[Math.floor(Math.random() * available.length)]
     await runTransaction(db, async (tx) => {
@@ -88,7 +92,8 @@ export function useAuctionData() {
     async (teamId, customAmount) => {
       const team = teams.find((t) => t.id === teamId)
       if (!team) return
-      const step = auction.bidStep || 50
+
+      const step = auction.currentBidTeamId === null ? 0 : (auction.bidStep || 50)
       const nextBid = customAmount ?? auction.currentBid + step
       const remaining = team.budget - team.spent
 
@@ -102,17 +107,19 @@ export function useAuctionData() {
       if (nextBid > remaining) return { ok: false, reason: 'over-budget' }
       if (nextBid + reserveNeeded > remaining) return { ok: false, reason: 'reserve-violation' }
 
-      await runTransaction(db, async (tx) => {
-        tx.update(AUCTION_DOC, {
-          currentBid: nextBid,
-          currentBidTeamId: teamId,
-          status: 'bidding',
+
+        await runTransaction(db, async (tx) => {
+          tx.update(AUCTION_DOC, {
+            currentBid: nextBid,
+            currentBidTeamId: teamId,
+            status: 'bidding',
+            bidStep: auction.currentBid >= 450 ? 100 : 50,
           updatedAt: serverTimestamp()
         })
       })
       return { ok: true }
     },
-    [teams, players, auction.currentBid, auction.bidStep, auction.minSquadSize, auction.reserveAmount]
+    [teams, players, auction]
   )
 
   const setBidStep = useCallback(async (step) => {

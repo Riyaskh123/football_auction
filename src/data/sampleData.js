@@ -38,7 +38,7 @@ export const defaultAuctionState = {
   currentBidTeamId: null,
   status: 'idle',
   bidStep: 50,
-  minSquadSize: 4,
+  minSquadSize: 9,
   reserveAmount: 100,
   updatedAt: null
 }

@@ -157,12 +157,12 @@ export default function RegisterScreen() {
             </select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-floodlight/50">Preferred jersey #</label>
+            <label className="text-xs text-floodlight/50">KPL Register No.</label>
             <input
-              type="number"
+              type="text"
               value={jerseyNo}
               onChange={(e) => setJerseyNo(e.target.value)}
-              placeholder="Optional"
+              placeholder="e.g. kpl_01"
               className="px-3 py-2.5 rounded-lg bg-pitch-950 border border-pitch-line outline-none focus:border-gold/60"
             />
           </div>

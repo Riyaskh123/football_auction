@@ -101,10 +101,10 @@ function ReviewCard({ registration, onApprove, onReject, onUpdate, onDelete, isA
               ))}
             </select>
             <input
-              type="number"
+              type="text"
               value={jerseyNo}
               onChange={(e) => setJerseyNo(e.target.value)}
-              placeholder="Jersey #"
+              placeholder="Reg No."
               className="px-3 py-2 rounded-lg bg-pitch-900 border border-pitch-line text-sm"
             />
           </div>
@@ -208,7 +208,7 @@ function ReviewCard({ registration, onApprove, onReject, onUpdate, onDelete, isA
             disabled={busy}
             onClick={async () => {
               setBusy(true)
-              await onDelete(registration.id)
+              await onDelete(registration.id,registration.playerId)
             }}
             className="px-3 py-1.5 rounded-lg bg-live text-white font-semibold"
           >

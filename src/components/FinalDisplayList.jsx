@@ -27,7 +27,7 @@ export default function DisplayFinalScreen() {
     }
 
     return (
-        <div className="min-h-[90vh] max-h-[90vh] w-full px-2 md:px-4 py-5 overflow-auto">
+        <div className="min-h-[90vh] max-h-[90vh] w-full px-2 md:px-0 py-5 md:py-0 overflow-auto">
 
             {/* ================= MOBILE ================= */}
             <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -113,7 +113,7 @@ export default function DisplayFinalScreen() {
 
 
             {/* ================= DESKTOP MARQUEE ================= */}
-            <div className="hidden md:block relative w-full overflow-hidden">
+            <div className="hidden md:flex items-center justify-center relative w-full overflow-hidden h-[90vh]">
 
                 {/* left fade */}
                 <div className="absolute left-0 top-0 bottom-0 w-16 z-20 pointer-events-none bg-gradient-to-r from-pitch-950 to-transparent" />
@@ -121,7 +121,7 @@ export default function DisplayFinalScreen() {
                 {/* right fade */}
                 <div className="absolute right-0 top-0 bottom-0 w-16 z-20 pointer-events-none bg-gradient-to-l from-pitch-950 to-transparent" />
 
-                <div className="marquee-wrapper">
+                <div className="marquee-wrapper my-auto">
 
                     {/* FIRST SET */}
                     <div className="marquee-track">

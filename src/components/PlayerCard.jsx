@@ -19,6 +19,9 @@ export default function PlayerCard({ player, animationDelay = 0 }) {
           <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-sm tracking-widest font-semibold">
             {player.position}
           </div>
+          <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-sm tracking-widest font-semibold">
+            {player.jerseyNo}
+          </div>
         </div>
 
         {/* details */}

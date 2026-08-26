@@ -7,7 +7,8 @@ import {
   updateDoc,
   deleteDoc,
   runTransaction,
-  serverTimestamp
+  serverTimestamp,
+  getDoc
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -30,7 +31,7 @@ export function useRegistrations() {
       name,
       phone: phone || null,
       position,
-      jerseyNo: jerseyNo ? Number(jerseyNo) : null,
+      jerseyNo: jerseyNo || null,
       photoUrl: photoUrl || null,
       status: 'pending',
       createdAt: serverTimestamp()
@@ -39,13 +40,16 @@ export function useRegistrations() {
 
   // Edit a pending registration's details before approving it.
   const updateRegistration = useCallback(async (id, patch) => {
+    const playerId = (await getDoc(doc(db, 'registrations', id))).data().playerId
     await updateDoc(doc(db, 'registrations', id), patch)
+    await updateDoc(doc(db, 'players', playerId), patch)
   }, [])
 
   // Remove a registration entirely (e.g. duplicate or no-show) — does not
   // touch the players collection, only relevant before it's been approved.
-  const deleteRegistration = useCallback(async (id) => {
+  const deleteRegistration = useCallback(async (id, playerId) => {
     await deleteDoc(doc(db, 'registrations', id))
+    await deleteDoc(doc(db, 'players', playerId))
   }, [])
 
   const approveRegistration = useCallback(async (registration, basePrice) => {

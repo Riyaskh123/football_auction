@@ -9,8 +9,6 @@ export default function Login() {
     const [error, setError] = useState(null)
 
     const handleLogin = () => {
-        console.log(import.meta.env.VITE_ADMIN_USERNAME);
-        console.log(import.meta.env.VITE_ADMIN_PASSWORD);
         
         if (username === import.meta.env.VITE_ADMIN_USERNAME && password === import.meta.env.VITE_ADMIN_PASSWORD) {
             localStorage.setItem('islogged', true)

@@ -24,7 +24,7 @@ export default function ControlScreen() {
     [players, auction.currentPlayerId]
   )
   const leadingTeam = teams.find((t) => t.id === auction.currentBidTeamId) || null
-  const availableCount = players.filter((p) => p.status === 'available').length
+  const availableCount = players.filter((p) => (p.status === 'available' || p.status === 'unsold')).length
   const soldCount = players.filter((p) => p.status === 'sold').length
   const unsoldCount = players.filter((p) => p.status === 'unsold').length
 
@@ -227,7 +227,7 @@ export default function ControlScreen() {
       {currentPlayer && auction.status === 'bidding' && (
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs text-floodlight/50">BID STEP</span>
-          {[10, 25, 50, 75, 100, 250].map((step) => (
+          {[50, 100].map((step) => (
             <button
               key={step}
               onClick={() => actions.setBidStep(step)}
@@ -268,15 +268,17 @@ export default function ControlScreen() {
             const squadCount = players.filter((p) => p.soldTo === team.id && p.status === 'sold').length
             const slotsStillNeeded = Math.max(0, (auction.minSquadSize || 0) - (squadCount + 1))
             const reserveNeeded = slotsStillNeeded * (auction.reserveAmount || 0)
-            const nextBid = auction.currentBid + (auction.bidStep || 50)
+            const nextBid = auction.currentBid + (auction.bidStep || 100)
             const wouldExceed = nextBid > remaining
-            const wouldBreakReserve = nextBid + reserveNeeded > remaining
+            const wouldBreakReserve = reserveNeeded >= (remaining - auction.currentBid)
             const disabled = (wouldExceed || wouldBreakReserve) && !isLeading
-
+            
             return (
               <button
                 key={team.id}
-                onClick={() => actions.placeBid(team.id)}
+                onClick={() => {
+                  actions.placeBid(team.id)}
+                }
                 disabled={disabled}
                 title={wouldBreakReserve && !wouldExceed ? `Needs to keep ${reserveNeeded} reserved for ${slotsStillNeeded} more player(s)` : ''}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors ${isLeading ? 'border-gold bg-gold/10' : 'border-pitch-line bg-pitch-800/50 hover:border-floodlight/30'
@@ -310,7 +312,10 @@ export default function ControlScreen() {
             >
               <div className="flex items-center gap-1">
                 <img src={p.photoUrl} alt={p.name} className="w-10 h-10 rounded-full bg-white object-cover" />
-                <span>#{p.jerseyNo} {p.name}</span>
+                <div className='flex flex-col gap-0'>
+                  <span className='text-white font-semibold'>{p.name}</span>
+                  <span className='text-[11px] text-floodlight/60'>#{p.jerseyNo} | {p.position}</span>
+                </div>
               </div>
               <span className="font-mono text-xs tabular">
                 {p.status === 'sold' ? p.soldPrice : p.status === 'unsold' ? 'UNSOLD' : p.basePrice}
