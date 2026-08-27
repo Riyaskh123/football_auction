@@ -107,7 +107,8 @@ export default function PlayersListScreen() {
               <div className="flex-1 min-w-0">
                 <div className="font-semibold truncate">
                   {p.jerseyNo ? `#${p.jerseyNo} ` : ''}
-                  {p.name}
+                  {p.name} 
+                  {p.isMarquee ? <span className="text-gold text-[10px] ml-1">(MARQEE)</span> : null}
                 </div>
                 <div className="text-xs text-floodlight/50">
                   {p.position} · base {p.basePrice}
@@ -153,7 +154,10 @@ export default function PlayersListScreen() {
                   <img src={p.photoUrl} alt={p.name} className="w-10 h-10 rounded object-cover" />
                 </td>
                 <td className="py-1.5 pr-2">{p.jerseyNo ?? ''}</td>
-                <td className="py-1.5 pr-2">{p.name}</td>
+                <td className="py-1.5 pr-2">
+                  {p.name}
+                  {p.isMarquee ? <span className="text-gold ml-1">(M)</span> : null}
+                </td>
                 <td className="py-1.5 pr-2">{p.position}</td>
                 <td className="py-1.5 pr-2">{p.basePrice}</td>
                 <td className="py-1.5 pr-2 capitalize">{p.status}</td>

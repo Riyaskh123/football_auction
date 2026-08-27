@@ -2,12 +2,19 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuctionData } from '../hooks/useAuctionData'
 
+const comparePlayers = (a, b) => {
+  if (a.isMarquee && !b.isMarquee) return -1
+  if (!a.isMarquee && b.isMarquee) return 1
+  return (b.soldPrice || 0) - (a.soldPrice || 0)
+}
+
 function downloadCsv(teams, players) {
   const rows = [['Team', 'Player', 'Jersey #', 'Position', 'Sold Price']]
   teams.forEach((team) => {
     players
       .filter((p) => p.soldTo === team.id)
-      .forEach((p) => rows.push([team.name, p.name, p.jerseyNo ?? '', p.position, p.soldPrice ?? '']))
+      .sort(comparePlayers)
+      .forEach((p) => rows.push([team.name, p.name + (p.isMarquee ? ' (MARQEE)' : ''), p.jerseyNo ?? '', p.position, p.soldPrice ?? '']))
   })
   const unsold = players.filter((p) => p.status === 'unsold')
   unsold.forEach((p) => rows.push(['UNSOLD', p.name, p.jerseyNo ?? '', p.position, '']))
@@ -31,7 +38,7 @@ export default function ResultsScreen() {
         team,
         players: players
           .filter((p) => p.soldTo === team.id)
-          .sort((a, b) => (b.soldPrice || 0) - (a.soldPrice || 0))
+          .sort(comparePlayers)
       })),
     [teams, players]
   )
@@ -103,11 +110,12 @@ export default function ResultsScreen() {
                       key={p.id}
                       className="flex items-center justify-between px-3 py-2 rounded-lg bg-pitch-950/60 border border-pitch-line/60 text-sm"
                     >
-                      <span>
+                      <p>
                         {p.jerseyNo ? `#${p.jerseyNo} ` : ''}
                         {p.name}
+                        {p.isMarquee ? <span className="text-gold text-[9px] ml-1">(Marquee)</span> : null}
                         <span className="text-floodlight/40 text-xs ml-2">{p.position}</span>
-                      </span>
+                      </p>
                       <span className="font-mono text-gold tabular">{p.soldPrice?.toLocaleString()}</span>
                     </div>
                   ))}

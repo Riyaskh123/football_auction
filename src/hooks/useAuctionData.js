@@ -197,6 +197,44 @@ export function useAuctionData() {
     await batch.commit()
   }, [players, teams])
 
+// normal bidding flow entirely. Used for pre-auction "marquee" / icon picks.
+const assignMarqueePlayer = useCallback(async (playerId, teamId, price) => {
+  const playerRef = doc(db, 'players', playerId)
+  const teamRef = doc(db, 'teams', teamId)
+  await runTransaction(db, async (tx) => {
+    const teamSnap = await tx.get(teamRef)
+    if (!teamSnap.exists()) throw new Error('Team not found')
+    const teamData = teamSnap.data()
+    const remaining = teamData.budget - (teamData.spent || 0)
+    const amount = Number(price)
+
+    if (!amount || amount <= 0) throw new Error('Enter a valid price')
+    if (amount > remaining) throw new Error(`Only ${remaining.toLocaleString()} remaining in this team's budget`)
+
+    tx.update(playerRef, {
+      status: 'sold',
+      soldTo: teamId,
+      soldPrice: amount,
+      isMarquee: true
+    })
+    tx.update(teamRef, { spent: (teamData.spent || 0) + amount })
+  })
+}, [])
+
+// Undoes a marquee assignment — frees the player back to 'available' and
+// refunds the price to the team's spent total.
+const removeMarqueePlayer = useCallback(async (playerId, teamId, price) => {
+  const playerRef = doc(db, 'players', playerId)
+  const teamRef = doc(db, 'teams', teamId)
+  await runTransaction(db, async (tx) => {
+    const teamSnap = await tx.get(teamRef)
+    if (!teamSnap.exists()) throw new Error('Team not found')
+    const teamData = teamSnap.data()
+    tx.update(playerRef, { status: 'available', soldTo: null, soldPrice: null, isMarquee: false })
+    tx.update(teamRef, { spent: Math.max(0, (teamData.spent || 0) - Number(price)) })
+  })
+}, [])
+
   return {
     teams,
     players,
@@ -213,7 +251,9 @@ export function useAuctionData() {
       markSold,
       markUnsold,
       clearBoard,
-      fullReset
+      fullReset,
+      assignMarqueePlayer,
+      removeMarqueePlayer
     }
   }
 }

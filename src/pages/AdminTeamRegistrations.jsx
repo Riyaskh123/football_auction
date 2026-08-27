@@ -1,8 +1,22 @@
 import { useRef, useState } from 'react'
 import { useTeamRegistrations } from '../hooks/useTeamRegistrations'
+import { useAuctionData } from '../hooks/useAuctionData'
 import Header from '../components/header'
 
-function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete, isRejected, isApproved }) {
+function TeamReviewCard({
+  registration,
+  team,
+  availablePlayers,
+  marqueePlayers,
+  onApprove,
+  onReject,
+  onUpdate,
+  onDelete,
+  onAssignMarquee,
+  onRemoveMarquee,
+  isRejected,
+  isApproved
+}) {
   const [budget, setBudget] = useState('10000')
   const [busy, setBusy] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -13,7 +27,11 @@ function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete,
   const [ownerName, setOwnerName] = useState(registration.ownerName || '')
   const [phone, setPhone] = useState(registration.phone || '')
 
-  const fileInputRef = useRef(null);
+  const [marqueePlayerId, setMarqueePlayerId] = useState('')
+  const [marqueePrice, setMarqueePrice] = useState('')
+  const [marqueeError, setMarqueeError] = useState('')
+
+  const fileInputRef = useRef(null)
 
   const saveEdit = async () => {
     setBusy(true)
@@ -32,6 +50,19 @@ function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete,
     if (!file) return
     setBusy(true)
     await onUpdate(registration.id, { logoUrl: file })
+    setBusy(false)
+  }
+
+  const handleAssignMarquee = async () => {
+    setMarqueeError('')
+    setBusy(true)
+    try {
+      await onAssignMarquee(marqueePlayerId, team.id, marqueePrice)
+      setMarqueePlayerId('')
+      setMarqueePrice('')
+    } catch (err) {
+      setMarqueeError(err.message || 'Could not assign player')
+    }
     setBusy(false)
   }
 
@@ -114,7 +145,6 @@ function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete,
       )}
 
       {!isApproved && (
-
         <div className="flex items-center gap-2">
           <label className="text-xs text-floodlight/50 shrink-0">Budget</label>
           <input
@@ -172,24 +202,82 @@ function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete,
         )
       }
 
-      {
-        isApproved && (
+      {isApproved && (
+        <div className="flex flex-col gap-3">
           <div className="flex w-full gap-2 justify-between items-center">
             <span className='inline-flex items-center rounded-md bg-green-400/10 px-2 py-1 text-xs font-medium text-green-400 inset-ring inset-ring-green-400/20'>Approved</span>
-            {/* <button
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true)
-                await onReject(registration)
-                setBusy(false)
-              }}
-              className="px-4 py-2 rounded-lg border bg-red-900/60 border-red-900 text-red text-sm hover:bg-live/10 transition-colors"
-            >
-              Reject
-            </button> */}
+            {team && (
+              <span className="text-[11px] text-floodlight/50 font-mono tabular">
+                {(team.budget - (team.spent || 0)).toLocaleString()} left of {team.budget?.toLocaleString()}
+              </span>
+            )}
           </div>
-        )
-      }
+
+          {/* marquee player assignment */}
+          {team && (
+            <div className="p-3 rounded-lg bg-pitch-950/60 border border-pitch-line flex flex-col gap-2">
+              <p className="text-xs text-floodlight/50">Assign marquee player</p>
+              <div className="flex gap-2">
+                <select
+                  value={marqueePlayerId}
+                  onChange={(e) => setMarqueePlayerId(e.target.value)}
+                  className="flex-1 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
+                >
+                  <option value="">Select player</option>
+                  {availablePlayers.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  value={marqueePrice}
+                  onChange={(e) => setMarqueePrice(e.target.value)}
+                  placeholder="Price"
+                  className="w-24 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
+                />
+              </div>
+              <button
+                disabled={busy || !marqueePlayerId || !marqueePrice}
+                onClick={handleAssignMarquee}
+                className="px-3 py-1.5 rounded-lg bg-gold text-pitch-950 text-xs font-semibold disabled:opacity-40 hover:bg-gold-light transition-colors self-start"
+              >
+                Add as Marquee player
+              </button>
+              {marqueeError && <p className="text-[11px] text-live">{marqueeError}</p>}
+            </div>
+          )}
+
+          {/* current marquee picks for this team */}
+          {marqueePlayers.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <p className="text-[11px] tracking-wide text-floodlight/40">MARQUEE PICKS</p>
+              {marqueePlayers.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-pitch-950/40 border border-pitch-line/60 text-xs"
+                >
+                  <span>
+                    {p.name} <span className="text-gold font-mono ml-1">{p.soldPrice?.toLocaleString()}</span>
+                  </span>
+                  <button
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusy(true)
+                      await onRemoveMarquee(p.id, team.id, p.soldPrice)
+                      setBusy(false)
+                    }}
+                    className="text-live text-[11px]"
+                  >
+                    Undo
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {confirmDelete ? (
         <div className="flex items-center gap-2 text-xs">
@@ -224,14 +312,34 @@ function TeamReviewCard({ registration, onApprove, onReject, onUpdate, onDelete,
 }
 
 export default function AdminTeamRegistrations() {
-  const { teamRegistrations, loading, actions } = useTeamRegistrations()
+  const { teamRegistrations, loading: regsLoading, actions } = useTeamRegistrations()
+  const { teams, players, loading: dataLoading, actions: auctionActions } = useAuctionData()
 
+  const loading = regsLoading || dataLoading
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-floodlight/40">Connecting…</div>
   }
 
+  const teamById = Object.fromEntries(teams.map((t) => [t.id, t]))
+  const availablePlayers = players.filter((p) => p.status === 'available')
+
   const pending = teamRegistrations.filter((r) => r.status === 'pending')
   const reviewed = teamRegistrations.filter((r) => r.status !== 'pending')
+
+  const cardProps = (r) => ({
+    registration: r,
+    team: r.teamId ? teamById[r.teamId] : null,
+    availablePlayers,
+    marqueePlayers: r.teamId
+      ? players.filter((p) => p.soldTo === r.teamId && p.isMarquee)
+      : [],
+    onApprove: actions.approveTeamRegistration,
+    onReject: actions.rejectTeamRegistration,
+    onUpdate: actions.updateTeamRegistration,
+    onDelete: actions.deleteTeamRegistration,
+    onAssignMarquee: auctionActions.assignMarqueePlayer,
+    onRemoveMarquee: auctionActions.removeMarqueePlayer
+  })
 
   return (
     <div className="min-h-screen px-4 md:px-8 py-6 flex flex-col gap-6 max-w-5xl mx-auto">
@@ -253,14 +361,7 @@ export default function AdminTeamRegistrations() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {pending.map((r) => (
-              <TeamReviewCard
-                key={r.id}
-                registration={r}
-                onApprove={actions.approveTeamRegistration}
-                onReject={actions.rejectTeamRegistration}
-                onUpdate={actions.updateTeamRegistration}
-                onDelete={actions.deleteTeamRegistration}
-              />
+              <TeamReviewCard key={r.id} {...cardProps(r)} />
             ))}
           </div>
         )}
@@ -271,28 +372,12 @@ export default function AdminTeamRegistrations() {
           <p className="text-xs tracking-widest text-floodlight/40 mb-3">REVIEWED ({reviewed.length})</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {reviewed.map((r) => (
-
               <TeamReviewCard
+                key={r.id}
                 isRejected={r.status === 'rejected'}
                 isApproved={r.status === 'approved'}
-                key={r.id}
-                registration={r}
-                onApprove={actions.approveTeamRegistration}
-                onReject={actions.rejectTeamRegistration}
-                onUpdate={actions.updateTeamRegistration}
-                onDelete={actions.deleteTeamRegistration}
+                {...cardProps(r)}
               />
-              // <div
-              //   key={r.id}
-              //   className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm border ${
-              //     r.status === 'approved'
-              //       ? 'border-gold/30 bg-gold/5 text-floodlight/60'
-              //       : 'border-live/30 bg-live/5 text-floodlight/60'
-              //   }`}
-              // >
-              //   <span>{r.name}</span>
-              //   <span className="text-xs uppercase tracking-wide">{r.status}</span>
-              // </div>
             ))}
           </div>
         </section>
