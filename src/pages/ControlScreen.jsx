@@ -281,7 +281,7 @@ export default function ControlScreen() {
             const reserveNeeded = slotsStillNeeded * (auction.reserveAmount || 0)
             const nextBid = auction.currentBid + (auction.bidStep || 100)
             const wouldExceed = nextBid > remaining
-            const wouldBreakReserve = reserveNeeded >= (remaining - auction.currentBid)
+            const wouldBreakReserve = reserveNeeded > (remaining - auction.currentBid)
             const disabled = (wouldExceed || wouldBreakReserve || squadCount == auction.minSquadSize) && !isLeading
             
             return (
