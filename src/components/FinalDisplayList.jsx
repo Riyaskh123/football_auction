@@ -10,10 +10,11 @@ export default function DisplayFinalScreen() {
                 team,
                 players: players
                     .filter((p) => p.soldTo === team.id)
-                    .sort(
-                        (a, b) =>
-                            (b.soldPrice || 0) - (a.soldPrice || 0)
-                    )
+                    .sort((a, b) => {
+                        if (a.isMarquee && !b.isMarquee) return -1
+                        if (!a.isMarquee && b.isMarquee) return 1
+                        return (b.soldPrice || 0) - (a.soldPrice || 0)
+                    })
             })),
         [teams, players]
     )
@@ -55,7 +56,7 @@ export default function DisplayFinalScreen() {
 
                                 <div className="flex-1 min-w-0">
                                     <h2 className="font-display text-xl tracking-wide leading-tight truncate">
-                                        {team.name}
+                                        {team.name} 
                                     </h2>
 
                                     <p className="text-xs font-mono text-floodlight/40 tabular mt-0.5">
@@ -89,7 +90,7 @@ export default function DisplayFinalScreen() {
 
                                             <div className="flex flex-col min-w-0 px-2">
                                                 <span className="text-sm truncate">
-                                                    {player.name}
+                                                    {player.name} {player.isMarquee ? <span className="text-gold ml-1">(M)</span> : null}
                                                 </span>
 
                                                 <div className="flex gap-2 items-center">
@@ -180,7 +181,7 @@ export default function DisplayFinalScreen() {
 
                                                             <div className="flex flex-col min-w-0 px-2">
                                                                 <span className="text-sm truncate">
-                                                                    {player.name}
+                                                                    {player.name} {player.isMarquee ? <span className="text-gold ml-1">(M)</span> : null}
                                                                 </span>
 
                                                                 <div className="flex gap-2 items-center">
@@ -258,7 +259,7 @@ export default function DisplayFinalScreen() {
 
                                                             <div className="flex flex-col min-w-0 px-2">
                                                                 <span className="text-sm truncate">
-                                                                    {player.name}
+                                                                    {player.name} {player.isMarquee ? <span className="text-gold ml-1">(M)</span> : null}
                                                                 </span>
 
                                                                 <div className="flex gap-2 items-center">
