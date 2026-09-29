@@ -73,7 +73,7 @@ export default {
         'float-slow': 'float-slow 4s ease-in-out infinite',
         ticker: 'ticker 22s linear infinite',
         'confetti-fall': 'confetti-fall linear forwards',
-        'zoom-in': 'zoom-in 0.1s ease-in-out both'
+        'zoom-in': 'zoom-in 0.15s ease-in-out both'
       }
     }
   },

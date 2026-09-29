@@ -65,7 +65,7 @@ export function useAuctionData() {
         currentBid: pick.basePrice,
         currentBidTeamId: null,
         status: 'bidding',
-        bidStep: auction.bidStep || 100,
+        bidStep: auction.bidStep || 50,
         minSquadSize: minSquadSize,
         reserveAmount: reserveAmount,
         updatedAt: serverTimestamp()
@@ -113,10 +113,10 @@ export function useAuctionData() {
             currentBid: nextBid,
             currentBidTeamId: teamId,
             status: 'bidding',
-            bidStep: auction.currentBid >= 450 ? 100 : 50,
-          updatedAt: serverTimestamp()
+            bidStep: auction.bidStep,
+            updatedAt: serverTimestamp()
+          })
         })
-      })
       return { ok: true }
     },
     [teams, players, auction]

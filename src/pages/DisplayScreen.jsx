@@ -54,14 +54,14 @@ export default function DisplayScreen() {
         </div>
       </header>
 
-      {availableCount !=0 && <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={10000} />}
+      {availableCount !=0 && <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={5000} />}
 
       {
         availableCount != 0 &&
         <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6 py-8">
           {currentPlayer ? (
             <div>
-              <PlayerCard player={currentPlayer} animationDelay={8750} />
+              <PlayerCard player={currentPlayer} animationDelay={4645} />
               <Scoreboard amount={auction.currentBid} leadingTeam={leadingTeam} />
             </div>
           ) : (
