@@ -61,7 +61,7 @@ export default function DisplayScreen() {
         <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6 py-8">
           {currentPlayer ? (
             <div>
-              <PlayerCard player={currentPlayer} animationDelay={4645} />
+              <PlayerCard player={currentPlayer} animationDelay={4400} />
               <Scoreboard amount={auction.currentBid} leadingTeam={leadingTeam} />
             </div>
           ) : (
