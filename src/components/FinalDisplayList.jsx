@@ -51,7 +51,7 @@ export default function DisplayFinalScreen() {
                                 <img
                                     src={team.logoUrl}
                                     alt={team.name}
-                                    className="w-14 h-14 rounded-full ring-2 ring-gold/60"
+                                    className="w-14 h-14 object-contain"
                                 />
 
                                 <div className="flex-1 min-w-0">

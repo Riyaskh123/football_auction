@@ -69,7 +69,7 @@ function TeamReviewCard({
   return (
     <div className={`rounded-xl border border-pitch-line p-4 flex flex-col gap-3 ${isApproved ? 'bg-pitch-800/50 border-2 border-gold' : isRejected ? 'border-2 bg-red-900/20  border-live' : ''}`}>
       <div className="flex items-center gap-3">
-        <div className="w-14 h-14 rounded-full bg-pitch-950 border border-pitch-line overflow-hidden flex items-center justify-center shrink-0"
+        <div className="w-14 h-14 overflow-hidden flex items-center justify-center shrink-0"
           onClick={() => {
             if (editing) {
               fileInputRef.current.click()
@@ -78,7 +78,7 @@ function TeamReviewCard({
           }
         >
           {registration.logoUrl ? (
-            <img src={registration.logoUrl} alt={registration.name} className="w-full h-full object-cover" />
+            <img src={registration.logoUrl} alt={registration.name} className="w-full h-full object-contain" />
           ) : (
             <span className="text-floodlight/30 text-xs">No logo</span>
           )}
