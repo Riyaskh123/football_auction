@@ -8,7 +8,7 @@ export default function TeamStrip({ teams, leadingTeamId }) {
           return (
             <div
               key={team.id}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all duration-300 ${isLeading
+              className={`flex w-full items-center gap-2 h-full md:h-auto px-3 py-1.5 rounded-2xl border transition-all duration-300 ${isLeading
                 ? 'border-gold bg-gold/10 scale-105 md:scale-110 animate-glow-pulse'
                 : 'border-pitch-line bg-pitch-800/60'
                 }`}

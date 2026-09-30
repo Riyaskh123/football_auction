@@ -34,7 +34,7 @@ export default function DisplayScreen() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <video src={video} autoPlay loop muted className="absolute z-0 top-0 left-0 w-full h-full object-cover opacity-25" />
-      <img src={logo} alt="logo" className={`absolute top-[18%] left-[50%] w-[140px] md:w-[250px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]  opacity-50' : 'md:left-[150px]'} translate-y-[-50%]`} />
+      <img src={logo} alt="logo" className={`absolute bottom-[10%] opacity-25 left-[50%] w-[140px] md:w-[250px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]  opacity-50' : 'md:left-[150px]'} translate-y-[-50%]`} />
 
       {availableCount === 0 &&
         <div className='absolute top-20 left-0 z-50 w-full overflow-auto'>

@@ -16,10 +16,10 @@ export default function PlayerCard({ player, animationDelay = 0 }) {
             className="w-full h-full object-cover animate-float-slow"
           />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-pitch-900 to-transparent" />
-          <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-sm tracking-widest font-semibold">
+          <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-[10px] md:text-sm tracking-widest font-semibold">
             {player.position}
           </div>
-          <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-sm tracking-widest font-semibold">
+          <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-pitch-950/80 border border-pitch-line text-[10px] md:text-sm tracking-widest font-semibold">
             {player.jerseyNo}
           </div>
         </div>
