@@ -200,13 +200,7 @@ export default function ControlScreen() {
         )}
 
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => actions.nextPlayer(minSquadSize,reserveAmount)}
-            disabled={availableCount === 0}
-            className="px-5 py-3 rounded-xl bg-gold text-pitch-950 font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gold-light transition-colors"
-          >
-            {isIdleState ? 'Call next player' : 'Skip to next player'}
-          </button>
+          
 
           {currentPlayer && auction.status === 'bidding' && (
             <>
@@ -231,6 +225,13 @@ export default function ControlScreen() {
               </button>
             </>
           )}
+          <button
+            onClick={() => actions.nextPlayer(minSquadSize,reserveAmount)}
+            disabled={availableCount === 0}
+            className="px-5 py-3 rounded-xl bg-gold text-pitch-950 font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gold-light transition-colors"
+          >
+            {isIdleState ? 'Call next player' : 'Skip to next player'}
+          </button>
         </div>
       </div>
 
