@@ -127,7 +127,7 @@ export default function FixturesScreen() {
 
       {tab === 'table' && (
         <div className="rounded-2xl border border-pitch-line bg-pitch-800/40 overflow-x-auto">
-          <table className="w-full text-sm min-w-[560px]">
+          <table className="w-full text-sm min-w-[200px]">
             <thead>
               <tr className="text-left text-floodlight/40 text-xs border-b border-pitch-line">
                 <th className="py-3 pl-4 pr-2">#</th>
@@ -136,8 +136,8 @@ export default function FixturesScreen() {
                 <th className="py-3 pr-2 text-center">W</th>
                 <th className="py-3 pr-2 text-center">D</th>
                 <th className="py-3 pr-2 text-center">L</th>
-                <th className="py-3 pr-2 text-center">GF</th>
-                <th className="py-3 pr-2 text-center">GA</th>
+                <th className="py-3 pr-2 text-center hidden md:table-cell">GF</th>
+                <th className="py-3 pr-2 text-center hidden md:table-cell">GA</th>
                 <th className="py-3 pr-2 text-center">GD</th>
                 <th className="py-3 pr-4 text-center">Pts</th>
               </tr>
@@ -149,15 +149,17 @@ export default function FixturesScreen() {
                   <td className="py-3 pr-2">
                     <div className="flex items-center gap-2">
                       <img src={row.team.logoUrl} alt={row.team.name} className="w-6 h-6 rounded-full" />
-                      <span className="font-semibold">{row.team.name}</span>
+                      <span className="font-semibold hidden md:block">{row.team.name}</span>
+                      <span className="font-semibold md:hidden">{row.team.shortName}</span>
+
                     </div>
                   </td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.played}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.won}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.drawn}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.lost}</td>
-                  <td className="py-3 pr-2 text-center font-mono tabular">{row.gf}</td>
-                  <td className="py-3 pr-2 text-center font-mono tabular">{row.ga}</td>
+                  <td className="py-3 pr-2 text-center font-mono tabular hidden md:table-cell">{row.gf}</td>
+                  <td className="py-3 pr-2 text-center font-mono tabular hidden md:table-cell">{row.ga}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.gd}</td>
                   <td className="py-3 pr-4 text-center font-mono tabular text-gold font-bold">{row.points}</td>
                 </tr>
