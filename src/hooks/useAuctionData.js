@@ -184,7 +184,7 @@ export function useAuctionData() {
   const fullReset = useCallback(async () => {
     const batch = writeBatch(db)
     players.forEach((p) =>
-      batch.update(doc(db, 'players', p.id), { status: 'available', soldTo: null, soldPrice: null })
+      batch.update(doc(db, 'players', p.id), { status: 'available', soldTo: null, soldPrice: null, isMarquee: false })
     )
     teams.forEach((t) => batch.update(doc(db, 'teams', t.id), { spent: 0 }))
     batch.update(AUCTION_DOC, {
