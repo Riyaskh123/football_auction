@@ -16,7 +16,7 @@ export default function TeamStrip({ teams, leadingTeamId }) {
               <img
                 src={team.logoUrl}
                 alt={team.name}
-                className={`w-10 h-10 md:w-12 md:h-12 rounded-full `}
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover`}
               />
               <div className="flex flex-col">
                 <span className="text-sm font-semibold tracking-wide text-floodlight/80">

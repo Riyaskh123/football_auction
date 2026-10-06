@@ -29,7 +29,16 @@ export default function DisplayScreen() {
   const soldCount = players.filter((p) => p.status === 'sold').length
   const remainingCount = players.filter((p) => p.status === 'available').length
 
-  const availableCount = players.filter((p) => (p.status === 'available' || p.status === 'unsold')).length
+  const allTeamsFull =
+    teams.length > 0 &&
+    teams.every((team) => {
+      const squadCount = players.filter((p) => p.soldTo === team.id && p.status === 'sold').length
+      return squadCount >= (auction.minSquadSize || 9)
+    })
+
+  const availableCount = allTeamsFull
+    ? 0
+    : players.filter((p) => (p.status === 'available' || p.status === 'unsold')).length
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
