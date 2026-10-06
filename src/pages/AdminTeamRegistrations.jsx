@@ -235,7 +235,7 @@ function TeamReviewCard({
                   value={marqueePrice}
                   onChange={(e) => setMarqueePrice(e.target.value)}
                   placeholder="Price"
-                  className="w-24 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
+                  className="w-20 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
                 />
               </div>
               <button
