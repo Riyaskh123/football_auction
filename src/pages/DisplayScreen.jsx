@@ -43,7 +43,7 @@ export default function DisplayScreen() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <video src={video} autoPlay loop muted className="absolute z-0 top-0 left-0 w-full h-full object-cover opacity-25" />
-      <img src={logo} alt="logo" className={`absolute bottom-[10%] opacity-25 left-[50%] w-[140px] md:w-[250px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]  opacity-50' : 'md:left-[150px]'} translate-y-[-50%]`} />
+      <img src={logo} alt="logo" className={`absolute bottom-[10%] opacity-25 left-[50%] w-[140px] md:w-[250px] translate-x-[-50%]  md:top-[50%] ${availableCount === 0 ? 'md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]  opacity-50' : 'md:left-[150px]'} translate-y-[-50%] hidden`} />
 
       {availableCount === 0 &&
         <div className='absolute top-20 left-0 z-50 w-full overflow-auto'>
@@ -63,11 +63,11 @@ export default function DisplayScreen() {
         </div>
       </header>
 
-      {availableCount !=0 && <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={5000} />}
+      {availableCount != 0 && <IntroOverlay show={showIntro} onFinish={finishIntro} videoSrc={introVideo} maxDuration={5000} />}
 
       {
         availableCount != 0 &&
-        <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6 py-8">
+        <main className="md:flex-1 flex flex-col items-center justify-center gap-6 md:px-6 md:py-8 px-3 py-4">
           {currentPlayer ? (
             <div>
               <PlayerCard player={currentPlayer} animationDelay={4400} />
@@ -84,12 +84,9 @@ export default function DisplayScreen() {
         </main>
       }
 
-      {
-        availableCount != 0 &&
-        <div className=" md:fixed right-2 bottom-0">
-          <TeamStrip teams={teams} leadingTeamId={auction.currentBidTeamId} />
-        </div>
-      }
+      {availableCount != 0 && (
+        <TeamStrip teams={teams} leadingTeamId={auction.currentBidTeamId} />
+      )}
 
       {availableCount != 0 && <SoldOverlay status={auction.status} player={currentPlayer} team={soldTeam} />}
 
