@@ -280,11 +280,18 @@ export default function ControlScreen() {
             const squadCount = players.filter((p) => p.soldTo === team.id && p.status === 'sold').length
             const slotsStillNeeded = Math.max(0, (auction.minSquadSize || 0) - (squadCount + 1))
             const reserveNeeded = slotsStillNeeded * (auction.reserveAmount || 0)
-            const nextBid = auction.currentBid + (auction.bidStep || 100)
+            const nextBid = squadCount == (auction.minSquadSize - 1) ? auction.currentBid :  auction.currentBid + (auction.bidStep || 100)
             const wouldExceed = nextBid > remaining
             const wouldBreakReserve = reserveNeeded > (remaining - auction.currentBid)
+            
+            
+            
             const disabled = (wouldExceed || wouldBreakReserve || squadCount == auction.minSquadSize) && !isLeading
             
+console.log(team.name, wouldExceed, wouldBreakReserve, squadCount == auction.minSquadSize);
+
+
+
             return (
               <button
                 key={team.id}
