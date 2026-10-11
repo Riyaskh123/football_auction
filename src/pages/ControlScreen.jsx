@@ -283,14 +283,7 @@ export default function ControlScreen() {
             const nextBid = squadCount == (auction.minSquadSize - 1) ? auction.currentBid :  auction.currentBid + (auction.bidStep || 100)
             const wouldExceed = nextBid > remaining
             const wouldBreakReserve = reserveNeeded > (remaining - auction.currentBid)
-            
-            
-            
             const disabled = (wouldExceed || wouldBreakReserve || squadCount == auction.minSquadSize) && !isLeading
-            
-console.log(team.name, wouldExceed, wouldBreakReserve, squadCount == auction.minSquadSize);
-
-
 
             return (
               <button
