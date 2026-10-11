@@ -9,7 +9,7 @@ export default function PlayerCard({ player, animationDelay = 0 }) {
     >
       <div className="relative rounded-[24px] bg-pitch-800/30 border border-pitch-line/50 overflow-hidden animate-glow-pulse">
         {/* photo */}
-        <div className="relative h-[225px] md:h-[60vh] bg-pitch-700/30 overflow-hidden">
+        <div className="relative h-[225px] md:h-[55vh] bg-pitch-700/30 overflow-hidden">
           <img
             src={player.photoUrl}
             alt={player.name}
