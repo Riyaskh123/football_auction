@@ -8,38 +8,95 @@ const tabs = [
   { key: 'scorers', label: 'Top Scorers' }
 ]
 
-function FixtureRow({ fixture, teamById }) {
+function ScorerLine({ scorer, players }) {
+  const player = players.find((p) => p.id === scorer.playerId)
+  if (!player) return null
+  return (
+    <span className="text-[11px] text-floodlight/50 leading-tight">
+      {player.name}
+      {scorer.goals > 1 && <span className="text-gold font-mono ml-1">×{scorer.goals}</span>}
+    </span>
+  )
+}
+
+function FixtureRow({ fixture, teamById, players }) {
   const a = teamById[fixture.teamA]
   const b = teamById[fixture.teamB]
+  const isLive = fixture.status === 'live'
+  const isCompleted = fixture.status === 'completed'
+  const hasScore = (isLive || isCompleted) && fixture.scoreA !== null && fixture.scoreA !== undefined
+
+  const scorersA = (fixture.scorers || []).filter((s) => s.team === 'A')
+  const scorersB = (fixture.scorers || []).filter((s) => s.team === 'B')
+
   return (
-    <div className="rounded-xl border border-pitch-line bg-pitch-800/40 p-4 flex flex-wrap items-center justify-between gap-3">
-      <div className="flex items-center gap-3 min-w-0">
-        {a && <img src={a.logoUrl} alt={a.name} className="w-9 h-9 rounded-full shrink-0" />}
-        <span className="text-sm font-semibold truncate w-28 text-right">{a?.name ?? '—'}</span>
-        {fixture.status === 'completed' ? (
-          <span className="font-mono text-gold tabular text-lg px-2">
-            {fixture.scoreA} – {fixture.scoreB}
-          </span>
-        ) : (
-          <span
-            className={`text-xs px-3 py-1 rounded-full border ${
-              fixture.status === 'live'
-                ? 'border-live/50 text-live animate-glow-pulse'
-                : 'border-pitch-line text-floodlight/40'
-            }`}
-          >
-            {fixture.status === 'live' ? 'LIVE' : 'vs'}
-          </span>
-        )}
-        <span className="text-sm font-semibold truncate w-28">{b?.name ?? '—'}</span>
-        {b && <img src={b.logoUrl} alt={b.name} className="w-9 h-9 rounded-full shrink-0" />}
+    <div className="rounded-xl border border-pitch-line bg-pitch-800/40 p-3 sm:p-4 flex flex-col gap-3">
+      {/* teams + score */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex-1 min-w-0 flex items-center justify-end gap-2 sm:gap-3">
+          <span className="text-xs sm:text-sm font-semibold truncate text-right">{a?.name ?? '—'}</span>
+          {a && (
+            <img
+              src={a.logoUrl}
+              alt={a.name}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 object-cover"
+            />
+          )}
+        </div>
+
+        <div className="flex flex-col items-center shrink-0 gap-1 px-1 w-16">
+          {hasScore ? (
+            <span className="font-mono text-gold tabular text-base sm:text-lg font-bold">
+              {fixture.scoreA} – {fixture.scoreB}
+            </span>
+          ) : (
+            <span className="text-floodlight/30 text-xs">vs</span>
+          )}
+          {isLive && (
+            <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full border border-live/50 text-live animate-glow-pulse uppercase tracking-wide">
+              Live
+            </span>
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
+          {b && (
+            <img
+              src={b.logoUrl}
+              alt={b.name}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 object-cover"
+            />
+          )}
+          <span className="text-xs sm:text-sm font-semibold truncate">{b?.name ?? '—'}</span>
+        </div>
       </div>
-      <div className="text-xs text-floodlight/40 flex items-center gap-2 shrink-0">
-        {fixture.round && <span>{fixture.round}</span>}
-        {fixture.date && <span>{fixture.date}</span>}
-        {fixture.time && <span>{fixture.time}</span>}
-        {fixture.venue && <span>· {fixture.venue}</span>}
-      </div>
+
+      {/* scorers — shown once a live or completed match has any recorded */}
+      {(isLive || isCompleted) && (scorersA.length > 0 || scorersB.length > 0) && (
+        <div className="flex items-start gap-2">
+          <div className="flex-1 flex flex-col items-end gap-0.5">
+            {scorersA.map((s, i) => (
+              <ScorerLine key={i} scorer={s} players={players} />
+            ))}
+          </div>
+          <span className="w-16 shrink-0" />
+          <div className="flex-1 flex flex-col items-start gap-0.5">
+            {scorersB.map((s, i) => (
+              <ScorerLine key={i} scorer={s} players={players} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* meta */}
+      {(fixture.round || fixture.date || fixture.time || fixture.venue) && (
+        <div className="text-[11px] text-floodlight/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-2 border-t border-pitch-line/50">
+          {fixture.round && <span>{fixture.round}</span>}
+          {fixture.date && <span>{fixture.date}</span>}
+          {fixture.time && <span>{fixture.time}</span>}
+          {fixture.venue && <span>· {fixture.venue}</span>}
+        </div>
+      )}
     </div>
   )
 }
@@ -93,7 +150,7 @@ export default function FixturesScreen() {
               <p className="text-xs tracking-widest text-live/70 mb-3">LIVE NOW</p>
               <div className="flex flex-col gap-3">
                 {live.map((f) => (
-                  <FixtureRow key={f.id} fixture={f} teamById={teamById} />
+                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players}/>
                 ))}
               </div>
             </section>
@@ -105,7 +162,7 @@ export default function FixturesScreen() {
             ) : (
               <div className="flex flex-col gap-3">
                 {upcoming.map((f) => (
-                  <FixtureRow key={f.id} fixture={f} teamById={teamById} />
+                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players} />
                 ))}
               </div>
             )}
@@ -117,7 +174,7 @@ export default function FixturesScreen() {
             ) : (
               <div className="flex flex-col gap-3">
                 {completed.map((f) => (
-                  <FixtureRow key={f.id} fixture={f} teamById={teamById} />
+                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players} />
                 ))}
               </div>
             )}

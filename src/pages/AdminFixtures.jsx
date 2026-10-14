@@ -1,13 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuctionData } from '../hooks/useAuctionData'
 import { useFixtures } from '../hooks/useFixtures'
+import { downloadFixtureTemplate, parseFixtureExcel } from '../utils/Fixtureexcel'
 
-function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel }) {
-  if (!localStorage.getItem('islogged')) {
-    navigate('/')
-  }
-  
+function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComplete }) {
   const [scoreA, setScoreA] = useState(fixture.scoreA ?? 0)
   const [scoreB, setScoreB] = useState(fixture.scoreB ?? 0)
   const [scorers, setScorers] = useState(fixture.scorers || [])
@@ -105,12 +102,103 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel }) {
         >
           Save result
         </button>
+        {fixture.status === 'live' && (
+          <button
+            onClick={() => onComplete()}
+            className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors"
+          >
+            Match Finish
+          </button>)
+        }
       </div>
+
+    </div>
+  )
+}
+
+function BulkUpload({ teams, onImport }) {
+  const [busy, setBusy] = useState(false)
+  const [errors, setErrors] = useState([])
+  const [importedCount, setImportedCount] = useState(null)
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-selecting the same file after fixing errors
+    if (!file) return
+
+    setBusy(true)
+    setErrors([])
+    setImportedCount(null)
+    try {
+      const { fixtures, errors: parseErrors } = await parseFixtureExcel(file, teams)
+      if (parseErrors.length > 0) {
+        setErrors(parseErrors)
+      }
+      if (fixtures.length > 0) {
+        await onImport(fixtures)
+        setImportedCount(fixtures.length)
+      }
+    } catch (err) {
+      setErrors([err.message || 'Could not read that file'])
+    }
+    setBusy(false)
+  }
+
+  return (
+    <div className="rounded-2xl border border-pitch-line bg-pitch-800/50 p-5 flex flex-col gap-3">
+      <p className="text-xs tracking-widest text-floodlight/40">BULK UPLOAD</p>
+      <p className="text-sm text-floodlight/60">
+        Schedule many fixtures at once from a spreadsheet. Team names must match your
+        registered teams exactly — download the template below for the right format
+        and a list of valid names.
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          onClick={() => downloadFixtureTemplate(teams)}
+          className="px-4 py-2 rounded-lg border border-pitch-line text-sm hover:border-gold/50 transition-colors"
+        >
+          Download sample Excel
+        </button>
+        <label className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors cursor-pointer">
+          {busy ? 'Importing…' : 'Upload Excel'}
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleFile}
+            disabled={busy}
+            className="hidden"
+          />
+        </label>
+      </div>
+
+      {importedCount !== null && (
+        <p className="text-sm text-gold">
+          Imported {importedCount} fixture{importedCount === 1 ? '' : 's'}.
+        </p>
+      )}
+
+      {errors.length > 0 && (
+        <div className="rounded-lg border border-live/40 bg-live/5 p-3 flex flex-col gap-1">
+          <p className="text-xs text-live font-semibold">
+            {errors.length} row{errors.length === 1 ? '' : 's'} skipped:
+          </p>
+          {errors.map((err, i) => (
+            <p key={i} className="text-xs text-live/80">
+              {err}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 export default function AdminFixtures() {
+  const navigate = useNavigate()
+  if (!localStorage.getItem('islogged')) {
+    navigate('/')
+  }
+
   const { teams, players, loading: dataLoading } = useAuctionData()
   const { fixtures, loading: fixturesLoading, actions } = useFixtures()
   const [teamA, setTeamA] = useState('')
@@ -149,20 +237,29 @@ export default function AdminFixtures() {
           <h1 className="font-display text-2xl md:text-3xl tracking-wide">FIXTURES SETUP</h1>
         </div>
         <div className="flex gap-3">
+
+          <Link
+            to="/dashboard"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-sm hover:border-gold/50 transition-colors"
+          >
+            Home
+          </Link>
           <Link
             to="/control"
-            className="px-4 py-2 rounded-lg border border-pitch-line text-sm hover:border-gold/50 transition-colors"
+            className="px-4 py-2 rounded-lg border border-pitch-line text-sm hover:border-gold/50 transition-colors hidden md:block"
           >
             Back to control
           </Link>
           <Link
             to="/fixtures"
-            className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors"
+            className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors hidden md:block"
           >
             View public page
           </Link>
         </div>
       </div>
+
+      <BulkUpload teams={teams} onImport={actions.createFixturesBulk} />
 
       {/* create fixture */}
       <div className="rounded-2xl border border-pitch-line bg-pitch-800/50 p-5 flex flex-col gap-3">
@@ -228,6 +325,8 @@ export default function AdminFixtures() {
         </button>
       </div>
 
+
+
       {/* fixture list */}
       <div className="flex flex-col gap-3">
         {sorted.length === 0 && (
@@ -240,26 +339,25 @@ export default function AdminFixtures() {
             <div key={f.id} className="rounded-xl border border-pitch-line bg-pitch-800/40 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0" />}
+                  {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
                   <span className="text-sm font-semibold truncate">{a?.name ?? '—'}</span>
                   <span className="font-mono text-gold tabular text-sm">
                     {f.status === 'completed' ? `${f.scoreA} – ${f.scoreB}` : 'vs'}
                   </span>
                   <span className="text-sm font-semibold truncate">{b?.name ?? '—'}</span>
-                  {b && <img src={b.logoUrl} alt={b.name} className="w-8 h-8 rounded-full shrink-0" />}
+                  {b && <img src={b.logoUrl} alt={b.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-floodlight/40">
                   {f.round && <span>{f.round}</span>}
                   {f.date && <span>{f.date}</span>}
                   {f.time && <span>{f.time}</span>}
                   <span
-                    className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wide ${
-                      f.status === 'completed'
+                    className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wide ${f.status === 'completed'
                         ? 'border-gold/40 text-gold'
                         : f.status === 'live'
-                        ? 'border-live/40 text-live'
-                        : 'border-pitch-line text-floodlight/40'
-                    }`}
+                          ? 'border-live/40 text-live'
+                          : 'border-pitch-line text-floodlight/40'
+                      }`}
                   >
                     {f.status}
                   </span>
@@ -296,6 +394,10 @@ export default function AdminFixtures() {
                   teamB={b}
                   players={players}
                   onCancel={() => setEditingId(null)}
+                  onComplete={async (result) => {
+                    await actions.setComplete(f.id)
+                    setEditingId(null)
+                  }}
                   onSave={async (result) => {
                     await actions.saveResult(f.id, result)
                     setEditingId(null)

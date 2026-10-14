@@ -6,7 +6,8 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -40,6 +41,31 @@ export function useFixtures() {
     })
   }, [])
 
+  const createFixturesBulk = useCallback(async (rows) => {
+  const CHUNK_SIZE = 450 // stay under Firestore's 500-operation batch limit
+  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+    const chunk = rows.slice(i, i + CHUNK_SIZE)
+    const batch = writeBatch(db)
+    chunk.forEach((row) => {
+      const ref = doc(FIXTURES_COL)
+      batch.set(ref, {
+        teamA: row.teamA,
+        teamB: row.teamB,
+        round: row.round || '',
+        date: row.date || '',
+        time: row.time || '',
+        venue: row.venue || '',
+        status: 'scheduled',
+        scoreA: null,
+        scoreB: null,
+        scorers: [],
+        createdAt: serverTimestamp()
+      })
+    })
+    await batch.commit()
+  }
+}, [])
+
   const updateFixture = useCallback(async (id, data) => {
     await updateDoc(doc(db, 'fixtures', id), data)
   }, [])
@@ -52,7 +78,12 @@ export function useFixtures() {
     await updateDoc(doc(db, 'fixtures', id), {
       scoreA: Number(scoreA),
       scoreB: Number(scoreB),
-      scorers,
+      scorers
+    })
+  }, [])
+
+  const setComplete = useCallback(async (id) => {
+    await updateDoc(doc(db, 'fixtures', id), {
       status: 'completed'
     })
   }, [])
@@ -60,13 +91,17 @@ export function useFixtures() {
   const deleteFixture = useCallback(async (id) => {
     await deleteDoc(doc(db, 'fixtures', id))
   }, [])
+  
 
   return {
     fixtures,
     loading,
-    actions: { createFixture, updateFixture, setStatus, saveResult, deleteFixture }
+    actions: { createFixture,createFixturesBulk, updateFixture, setStatus, saveResult, deleteFixture,setComplete }
   }
 }
+
+
+ 
 
 // Standard 3/1/0 points table, computed from completed fixtures only.
 export function computeStandings(teams, fixtures) {
