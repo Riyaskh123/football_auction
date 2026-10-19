@@ -68,6 +68,19 @@ function excelDateToString(value) {
   return String(value).trim()
 }
 
+function excelTimetoString(value) {
+  if (!value) return ''
+  if (typeof value === 'number') {
+    // Excel serial time (happens when the cell is formatted as a time,
+    // even if the admin typed something that looks like plain text)
+    const parsed = XLSX.SSF.parse_date_code(value)
+    if (!parsed) return ''
+    const hh = String(parsed.H).padStart(2, '0')
+    const mm = String(parsed.M).padStart(2, '0')
+    return `${hh}:${mm}`
+  }
+  return String(value).trim()
+}
 // Reads an uploaded .xlsx File, matches each row's Team A / Team B against
 // the real team list by name (case-insensitive, also checks shortName),
 // and returns { fixtures, errors } — errors are per-row, human-readable,
@@ -122,7 +135,7 @@ export function parseFixtureExcel(file, teams) {
             teamB: teamB.id,
             round: String(row['Round'] || '').trim(),
             date: excelDateToString(row['Date']),
-            time: String(row['Time'] || '').trim(),
+            time: excelTimetoString(row['Time']),
             venue: String(row['Venue'] || '').trim()
           })
         })
