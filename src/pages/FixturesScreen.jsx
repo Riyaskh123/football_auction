@@ -8,6 +8,24 @@ const tabs = [
   { key: 'scorers', label: 'Top Scorers' }
 ]
 
+function formatTime12H(timeStr) {
+  if (!timeStr) return ''
+  const trimmed = String(timeStr).trim()
+  if (/am|pm/i.test(trimmed)) return trimmed
+
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/)
+  if (!match) return trimmed
+
+  let hours = parseInt(match[1], 10)
+  const minutes = match[2]
+  if (isNaN(hours) || hours < 0 || hours > 23) return trimmed
+
+  const period = hours >= 12 ? 'PM' : 'AM'
+  hours = hours % 12 || 12
+
+  return `${hours}:${minutes} ${period}`
+}
+
 function ScorerLine({ scorer, players }) {
   const player = players.find((p) => p.id === scorer.playerId)
   if (!player) return null
@@ -93,7 +111,7 @@ function FixtureRow({ fixture, teamById, players }) {
         <div className="text-[11px] text-floodlight/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-2 border-t border-pitch-line/50">
           {fixture.round && <span>{fixture.round}</span>}
           {fixture.date && <span>{fixture.date}</span>}
-          {fixture.time && <span>{fixture.time}</span>}
+          {fixture.time && <span>{formatTime12H(fixture.time)}</span>}
           {fixture.venue && <span>· {fixture.venue}</span>}
         </div>
       )}
