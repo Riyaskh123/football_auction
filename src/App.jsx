@@ -11,6 +11,7 @@ import PlayersListScreen from './pages/PlayersListScreen.jsx'
 import AdminFixtures from './pages/AdminFixtures.jsx'
 import FixturesScreen from './pages/FixturesScreen.jsx'
 import Login from './pages/Login.jsx'
+import TournamentSummary from './pages/TournamentSummary.jsx'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
       <Route path="/players" element={<PlayersListScreen />} />
       <Route path="/admin/fixtures" element={<AdminFixtures />} />
       <Route path="/fixtures" element={<FixturesScreen />} />
+      <Route path="/summary" element={<TournamentSummary />} />
     </Routes>
   )
 }
