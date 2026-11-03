@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuctionData } from '../hooks/useAuctionData'
 import { useFixtures, computeStandings, computeTopScorers, computeTopAssists } from '../hooks/useFixtures'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function StatCard({ label, value, accent }) {
     return (
@@ -185,6 +185,13 @@ function FixtureModal({ fixture, teamById, players, onClose }) {
 }
 
 export default function TournamentSummary() {
+
+    const navigate = useNavigate()
+
+    if (!localStorage.getItem('islogged')) {
+        navigate('/')
+    }
+
     const { teams, players, loading: dataLoading } = useAuctionData()
     const { fixtures, loading: fixturesLoading } = useFixtures()
     const [selectedFixture, setSelectedFixture] = useState(null)

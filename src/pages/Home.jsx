@@ -13,6 +13,11 @@ import score from '../assets/score.png';
 
 export default function Home() {
   const navigate = useNavigate()
+
+  if (!localStorage.getItem('islogged')) {
+    navigate('/')
+  }
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-10 px-6">
       <div className="text-center">
