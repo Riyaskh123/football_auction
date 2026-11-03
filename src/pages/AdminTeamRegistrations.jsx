@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useTeamRegistrations } from '../hooks/useTeamRegistrations'
 import { useAuctionData } from '../hooks/useAuctionData'
 import Header from '../components/header'
+import { uploadToCloudinary } from '../utils/cloudinary'
 
 function TeamReviewCard({
   registration,
@@ -49,7 +50,8 @@ function TeamReviewCard({
     const file = e.target.files[0]
     if (!file) return
     setBusy(true)
-    await onUpdate(registration.id, { logoUrl: file })
+    const logoUrl = await uploadToCloudinary(file)
+    await onUpdate(registration.id, { logoUrl: logoUrl })
     setBusy(false)
   }
 

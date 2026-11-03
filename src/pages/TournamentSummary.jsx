@@ -208,7 +208,9 @@ export default function TournamentSummary() {
     // land in a single "Fixtures" bucket
     const grouped = {}
         ;[...fixtures]
-            .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+            .sort(
+                (a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '')
+            )
             .forEach((f) => {
                 const key = f.round || 'Fixtures'
                 if (!grouped[key]) grouped[key] = []

@@ -284,7 +284,9 @@ export default function AdminFixtures() {
     setVenue('')
   }
 
-  const sorted = [...fixtures].sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+  const sorted = [...fixtures].sort(
+    (a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '')
+  )
 
   return (
     <div className="min-h-screen px-4 md:px-8 py-6 max-w-4xl mx-auto flex flex-col gap-6">

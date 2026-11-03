@@ -153,7 +153,9 @@ export default function FixturesScreen() {
     return <div className="min-h-screen flex items-center justify-center text-floodlight/40">Connecting…</div>
   }
 
-  const sortedFixtures = [...fixtures].sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+  const sortedFixtures = [...fixtures].sort(
+    (a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '')
+  )
   const live = sortedFixtures.filter((f) => f.status === 'live')
   const upcoming = sortedFixtures.filter((f) => f.status === 'scheduled')
   const completed = sortedFixtures.filter((f) => f.status === 'completed')
