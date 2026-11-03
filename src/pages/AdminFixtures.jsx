@@ -8,6 +8,7 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
   const [scoreA, setScoreA] = useState(fixture.scoreA ?? 0)
   const [scoreB, setScoreB] = useState(fixture.scoreB ?? 0)
   const [scorers, setScorers] = useState(fixture.scorers || [])
+  const [assists, setAssists] = useState(fixture.assists || [])
 
   const squadA = players.filter((p) => p.soldTo === teamA?.id)
   const squadB = players.filter((p) => p.soldTo === teamB?.id)
@@ -22,6 +23,18 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
   }
   const removeScorer = (idx) => {
     setScorers((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  const addAssist = (side) => {
+    const squad = side === 'A' ? squadA : squadB
+    if (squad.length === 0) return
+    setAssists((prev) => [...prev, { playerId: squad[0].id, team: side, assists: 1 }])
+  }
+  const updateAssist = (idx, patch) => {
+    setAssists((prev) => prev.map((a, i) => (i === idx ? { ...a, ...patch } : a)))
+  }
+  const removeAssist = (idx) => {
+    setAssists((prev) => prev.filter((_, i) => i !== idx))
   }
 
   return (
@@ -49,45 +62,90 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
           { side: 'A', team: teamA, squad: squadA },
           { side: 'B', team: teamB, squad: squadB }
         ].map(({ side, team, squad }) => (
-          <div key={side} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-floodlight/50">{team?.name} scorers</span>
-              <button
-                onClick={() => addScorer(side)}
-                disabled={squad.length === 0}
-                className="text-xs text-gold disabled:opacity-30"
-              >
-                + Add scorer
-              </button>
+          <div key={side} className="flex flex-col gap-3">
+            {/* scorers */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-floodlight/50">{team?.name} scorers</span>
+                <button
+                  onClick={() => addScorer(side)}
+                  disabled={squad.length === 0}
+                  className="text-xs text-gold disabled:opacity-30"
+                >
+                  + Add scorer
+                </button>
+              </div>
+              {scorers
+                .map((s, idx) => ({ ...s, idx }))
+                .filter((s) => s.team === side)
+                .map((s) => (
+                  <div key={s.idx} className="flex items-center gap-2">
+                    <select
+                      value={s.playerId}
+                      onChange={(e) => updateScorer(s.idx, { playerId: e.target.value })}
+                      className="flex-1 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
+                    >
+                      {squad.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      min="1"
+                      value={s.goals}
+                      onChange={(e) => updateScorer(s.idx, { goals: e.target.value })}
+                      className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs text-center"
+                    />
+                    <button onClick={() => removeScorer(s.idx)} className="text-live text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ))}
             </div>
-            {scorers
-              .map((s, idx) => ({ ...s, idx }))
-              .filter((s) => s.team === side)
-              .map((s) => (
-                <div key={s.idx} className="flex items-center gap-2">
-                  <select
-                    value={s.playerId}
-                    onChange={(e) => updateScorer(s.idx, { playerId: e.target.value })}
-                    className="flex-1 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
-                  >
-                    {squad.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    min="1"
-                    value={s.goals}
-                    onChange={(e) => updateScorer(s.idx, { goals: e.target.value })}
-                    className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs text-center"
-                  />
-                  <button onClick={() => removeScorer(s.idx)} className="text-live text-xs">
-                    ✕
-                  </button>
-                </div>
-              ))}
+
+            {/* assists */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-pitch-line/50">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-floodlight/50">{team?.name} assists</span>
+                <button
+                  onClick={() => addAssist(side)}
+                  disabled={squad.length === 0}
+                  className="text-xs text-gold disabled:opacity-30"
+                >
+                  + Add assist
+                </button>
+              </div>
+              {assists
+                .map((a, idx) => ({ ...a, idx }))
+                .filter((a) => a.team === side)
+                .map((a) => (
+                  <div key={a.idx} className="flex items-center gap-2">
+                    <select
+                      value={a.playerId}
+                      onChange={(e) => updateAssist(a.idx, { playerId: e.target.value })}
+                      className="flex-1 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs"
+                    >
+                      {squad.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      min="1"
+                      value={a.assists}
+                      onChange={(e) => updateAssist(a.idx, { assists: e.target.value })}
+                      className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-pitch-line text-xs text-center"
+                    />
+                    <button onClick={() => removeAssist(a.idx)} className="text-live text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ))}
+            </div>
           </div>
         ))}
       </div>
@@ -97,7 +155,7 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
           Cancel
         </button>
         <button
-          onClick={() => onSave({ scoreA, scoreB, scorers })}
+          onClick={() => onSave({ scoreA, scoreB, scorers, assists })}
           className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors"
         >
           Save result
@@ -108,10 +166,9 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
             className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors"
           >
             Match Finish
-          </button>)
-        }
+          </button>
+        )}
       </div>
-
     </div>
   )
 }

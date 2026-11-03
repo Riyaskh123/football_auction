@@ -31,8 +31,19 @@ function ScorerLine({ scorer, players }) {
   if (!player) return null
   return (
     <span className="text-[11px] text-floodlight/50 leading-tight">
-      {player.name}
+      ⚽ {player.name}
       {scorer.goals > 1 && <span className="text-gold font-mono ml-1">×{scorer.goals}</span>}
+    </span>
+  )
+}
+
+function AssistLine({ assist, players }) {
+  const player = players.find((p) => p.id === assist.playerId)
+  if (!player) return null
+  return (
+    <span className="text-[10px] text-floodlight/35 leading-tight">
+      🅰 {player.name}
+      {assist.assists > 1 && <span className="font-mono ml-1">×{assist.assists}</span>}
     </span>
   )
 }
@@ -46,6 +57,9 @@ function FixtureRow({ fixture, teamById, players }) {
 
   const scorersA = (fixture.scorers || []).filter((s) => s.team === 'A')
   const scorersB = (fixture.scorers || []).filter((s) => s.team === 'B')
+
+  const assistsA = (fixture.assists || []).filter((a) => a.team === 'A')
+  const assistsB = (fixture.assists || []).filter((a) => a.team === 'B')
 
   return (
     <div className="rounded-xl border border-pitch-line bg-pitch-800/40 p-3 sm:p-4 flex flex-col gap-3">
@@ -89,22 +103,28 @@ function FixtureRow({ fixture, teamById, players }) {
         </div>
       </div>
 
-      {/* scorers — shown once a live or completed match has any recorded */}
-      {(isLive || isCompleted) && (scorersA.length > 0 || scorersB.length > 0) && (
-        <div className="flex items-start gap-2">
-          <div className="flex-1 flex flex-col items-end gap-0.5">
-            {scorersA.map((s, i) => (
-              <ScorerLine key={i} scorer={s} players={players} />
-            ))}
+      {(isLive || isCompleted) &&
+        (scorersA.length > 0 || scorersB.length > 0 || assistsA.length > 0 || assistsB.length > 0) && (
+          <div className="flex items-start gap-2">
+            <div className="flex-1 flex flex-col items-end gap-0.5">
+              {scorersA.map((s, i) => (
+                <ScorerLine key={`g-${i}`} scorer={s} players={players} />
+              ))}
+              {assistsA.map((a, i) => (
+                <AssistLine key={`a-${i}`} assist={a} players={players} />
+              ))}
+            </div>
+            <span className="w-16 shrink-0" />
+            <div className="flex-1 flex flex-col items-start gap-0.5">
+              {scorersB.map((s, i) => (
+                <ScorerLine key={`g-${i}`} scorer={s} players={players} />
+              ))}
+              {assistsB.map((a, i) => (
+                <AssistLine key={`a-${i}`} assist={a} players={players} />
+              ))}
+            </div>
           </div>
-          <span className="w-16 shrink-0" />
-          <div className="flex-1 flex flex-col items-start gap-0.5">
-            {scorersB.map((s, i) => (
-              <ScorerLine key={i} scorer={s} players={players} />
-            ))}
-          </div>
-        </div>
-      )}
+        )}
 
       {/* meta */}
       {(fixture.round || fixture.date || fixture.time || fixture.venue) && (
@@ -150,11 +170,10 @@ export default function FixturesScreen() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`px-5 py-2 rounded-full text-sm border transition-colors ${
-              tab === t.key
-                ? 'border-gold text-gold bg-gold/10'
-                : 'border-pitch-line text-floodlight/60 hover:border-floodlight/30'
-            }`}
+            className={`px-5 py-2 rounded-full text-sm border transition-colors ${tab === t.key
+              ? 'border-gold text-gold bg-gold/10'
+              : 'border-pitch-line text-floodlight/60 hover:border-floodlight/30'
+              }`}
           >
             {t.label}
           </button>
@@ -168,7 +187,7 @@ export default function FixturesScreen() {
               <p className="text-xs tracking-widest text-live/70 mb-3">LIVE NOW</p>
               <div className="flex flex-col gap-3">
                 {live.map((f) => (
-                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players}/>
+                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players} />
                 ))}
               </div>
             </section>

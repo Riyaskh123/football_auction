@@ -74,13 +74,14 @@ export function useFixtures() {
     await updateDoc(doc(db, 'fixtures', id), { status })
   }, [])
 
-  const saveResult = useCallback(async (id, { scoreA, scoreB, scorers }) => {
-    await updateDoc(doc(db, 'fixtures', id), {
-      scoreA: Number(scoreA),
-      scoreB: Number(scoreB),
-      scorers
-    })
-  }, [])
+  const saveResult = useCallback(async (id, { scoreA, scoreB, scorers, assists }) => {
+  await updateDoc(doc(db, 'fixtures', id), {
+    scoreA: Number(scoreA),
+    scoreB: Number(scoreB),
+    scorers: scorers || [],
+    assists: assists || []
+  })
+}, [])
 
   const setComplete = useCallback(async (id) => {
     await updateDoc(doc(db, 'fixtures', id), {
@@ -157,4 +158,17 @@ export function computeTopScorers(players, fixtures) {
     .map(([playerId, goals]) => ({ player: players.find((p) => p.id === playerId), goals }))
     .filter((row) => row.player)
     .sort((a, b) => b.goals - a.goals)
+}
+
+export function computeTopAssists(players, fixtures) {
+  const assistsByPlayer = {}
+  fixtures.forEach((f) => {
+    ;(f.assists || []).forEach((a) => {
+      assistsByPlayer[a.playerId] = (assistsByPlayer[a.playerId] || 0) + Number(a.assists || 0)
+    })
+  })
+  return Object.entries(assistsByPlayer)
+    .map(([playerId, assists]) => ({ player: players.find((p) => p.id === playerId), assists }))
+    .filter((row) => row.player)
+    .sort((a, b) => b.assists - a.assists)
 }
