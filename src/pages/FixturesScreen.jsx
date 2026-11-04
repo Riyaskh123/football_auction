@@ -49,8 +49,8 @@ function AssistLine({ assist, players }) {
   )
 }
 
-function OwnGoalLine({ ownGoal, team }) {
-  if (ownGoal == 0) return;
+function OwnGoalLine({ ownGoal }) {
+  if (ownGoal == 0 || !ownGoal) return;
   return (
     <span className="text-[11px] text-live/70 leading-tight italic mt-1">
       <span className='bg-white text-center p-[3px] rounded text-[9px] font-bold truncate'>OG</span> Own Goal
