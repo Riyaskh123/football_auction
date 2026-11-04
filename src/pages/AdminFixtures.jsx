@@ -9,6 +9,7 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
   const [scoreB, setScoreB] = useState(fixture.scoreB ?? 0)
   const [scorers, setScorers] = useState(fixture.scorers || [])
   const [assists, setAssists] = useState(fixture.assists || [])
+  const [ownGoals, setOwnGoals] = useState(fixture.ownGoals || {})
 
   const squadA = players.filter((p) => p.soldTo === teamA?.id)
   const squadB = players.filter((p) => p.soldTo === teamB?.id)
@@ -35,6 +36,11 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
   }
   const removeAssist = (idx) => {
     setAssists((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+
+  const updateOwnGoal = (patch) => {
+    setOwnGoals({...ownGoals,...patch})
   }
 
   return (
@@ -146,6 +152,20 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
                   </div>
                 ))}
             </div>
+
+            {/* own goals */}
+            <div className="flex flex-col items-end gap-2 pt-2 border-t border-pitch-line/50">
+                  <div key={0} className="flex items-center gap-2">
+                    <span className='text-xs'>Own Goal</span>
+                    <input
+                      type="number"
+                      min="0"
+                      defaultValue={ownGoals[side] || 0}
+                      onChange={(e) => side == "A" ? updateOwnGoal({ "A": e.target.value }) : updateOwnGoal({ "B": e.target.value })}
+                      className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-live/40 text-xs text-center"
+                    />
+                  </div>
+            </div>
           </div>
         ))}
       </div>
@@ -155,7 +175,7 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
           Cancel
         </button>
         <button
-          onClick={() => onSave({ scoreA, scoreB, scorers, assists })}
+          onClick={() => onSave({ scoreA, scoreB, scorers, assists, ownGoals })}
           className="px-4 py-2 rounded-lg bg-gold text-pitch-950 text-sm font-semibold hover:bg-gold-light transition-colors"
         >
           Save result
@@ -412,10 +432,10 @@ export default function AdminFixtures() {
                   {f.time && <span>{f.time}</span>}
                   <span
                     className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wide ${f.status === 'completed'
-                        ? 'border-gold/40 text-gold'
-                        : f.status === 'live'
-                          ? 'border-live/40 text-live'
-                          : 'border-pitch-line text-floodlight/40'
+                      ? 'border-gold/40 text-gold'
+                      : f.status === 'live'
+                        ? 'border-live/40 text-live'
+                        : 'border-pitch-line text-floodlight/40'
                       }`}
                   >
                     {f.status}

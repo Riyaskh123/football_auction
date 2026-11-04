@@ -74,12 +74,13 @@ export function useFixtures() {
     await updateDoc(doc(db, 'fixtures', id), { status })
   }, [])
 
-  const saveResult = useCallback(async (id, { scoreA, scoreB, scorers, assists }) => {
+  const saveResult = useCallback(async (id, { scoreA, scoreB, scorers, assists,ownGoals }) => {
   await updateDoc(doc(db, 'fixtures', id), {
     scoreA: Number(scoreA),
     scoreB: Number(scoreB),
     scorers: scorers || [],
-    assists: assists || []
+    assists: assists || [],
+    ownGoals: ownGoals || [],
   })
 }, [])
 

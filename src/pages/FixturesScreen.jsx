@@ -4,6 +4,7 @@ import { useFixtures, computeStandings, computeTopScorers } from '../hooks/useFi
 
 const tabs = [
   { key: 'fixtures', label: 'Fixtures' },
+  { key: 'completed', label: 'Results' },
   { key: 'table', label: 'Table' },
   { key: 'scorers', label: 'Top Scorers' }
 ]
@@ -44,6 +45,16 @@ function AssistLine({ assist, players }) {
     <span className="text-[10px] text-floodlight/35 leading-tight">
       🅰 {player.name}
       {assist.assists > 1 && <span className="font-mono ml-1">×{assist.assists}</span>}
+    </span>
+  )
+}
+
+function OwnGoalLine({ ownGoal, team }) {
+  if (ownGoal == 0) return;
+  return (
+    <span className="text-[11px] text-live/70 leading-tight italic mt-1">
+      <span className='bg-white text-center p-[3px] rounded text-[9px] font-bold truncate'>OG</span> Own Goal
+      {ownGoal > 1 && <span className="font-mono ml-1">×{ownGoal}</span>}
     </span>
   )
 }
@@ -104,7 +115,12 @@ function FixtureRow({ fixture, teamById, players }) {
       </div>
 
       {(isLive || isCompleted) &&
-        (scorersA.length > 0 || scorersB.length > 0 || assistsA.length > 0 || assistsB.length > 0) && (
+        (scorersA.length > 0 ||
+          scorersB.length > 0 ||
+          assistsA.length > 0 ||
+          assistsB.length > 0 ||
+          fixture.ownGoal.A > 0 ||
+          fixture.ownGoal.B > 0) && (
           <div className="flex items-start gap-2">
             <div className="flex-1 flex flex-col items-end gap-0.5">
               {scorersA.map((s, i) => (
@@ -113,6 +129,7 @@ function FixtureRow({ fixture, teamById, players }) {
               {assistsA.map((a, i) => (
                 <AssistLine key={`a-${i}`} assist={a} players={players} />
               ))}
+              <OwnGoalLine ownGoal={fixture.ownGoals.A} team={"A"} />
             </div>
             <span className="w-16 shrink-0" />
             <div className="flex-1 flex flex-col items-start gap-0.5">
@@ -122,6 +139,7 @@ function FixtureRow({ fixture, teamById, players }) {
               {assistsB.map((a, i) => (
                 <AssistLine key={`a-${i}`} assist={a} players={players} />
               ))}
+              <OwnGoalLine ownGoal={fixture.ownGoals.B} team={"B"} />
             </div>
           </div>
         )}
@@ -172,7 +190,7 @@ export default function FixturesScreen() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`px-5 py-2 rounded-full text-sm border transition-colors ${tab === t.key
+            className={`px-4 py-2 rounded-full text-sm border transition-colors ${tab === t.key
               ? 'border-gold text-gold bg-gold/10'
               : 'border-pitch-line text-floodlight/60 hover:border-floodlight/30'
               }`}
@@ -181,6 +199,23 @@ export default function FixturesScreen() {
           </button>
         ))}
       </div>
+
+      {tab === 'completed' && (
+        <div className="flex flex-col gap-8">
+          <section>
+            <p className="text-xs tracking-widest text-floodlight/40 mb-3">RESULTS</p>
+            {completed.length === 0 ? (
+              <p className="text-floodlight/30 text-sm">No results yet.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {completed.map((f) => (
+                  <FixtureRow key={f.id} fixture={f} teamById={teamById} players={players} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
       {tab === 'fixtures' && (
         <div className="flex flex-col gap-8">
@@ -206,7 +241,7 @@ export default function FixturesScreen() {
               </div>
             )}
           </section>
-          <section>
+          {/* <section>
             <p className="text-xs tracking-widest text-floodlight/40 mb-3">RESULTS</p>
             {completed.length === 0 ? (
               <p className="text-floodlight/30 text-sm">No results yet.</p>
@@ -217,7 +252,7 @@ export default function FixturesScreen() {
                 ))}
               </div>
             )}
-          </section>
+          </section> */}
         </div>
       )}
 

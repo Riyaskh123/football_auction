@@ -150,6 +150,10 @@ function FixtureModal({ fixture, teamById, players, onClose }) {
                                     ))}
                                 </div>
                             )}
+                            {fixture.ownGoals.A > 0 &&
+                                <p className="text-[10px] tracking-wide text-floodlight/60 mb-1">Own Goal x {fixture.ownGoals.A}</p>
+                            }
+
                         </div>
                         <div className="flex flex-col gap-2">
                             {scorersB.length > 0 && (
@@ -172,6 +176,10 @@ function FixtureModal({ fixture, teamById, players, onClose }) {
                                     ))}
                                 </div>
                             )}
+
+                            {fixture.ownGoals.B > 0 &&
+                                <p className="text-[10px] tracking-wide text-floodlight/60 mb-1">Own Goal x {fixture.ownGoals.B}</p>
+                            }
                         </div>
                     </div>
                 ) : (
@@ -180,7 +188,7 @@ function FixtureModal({ fixture, teamById, players, onClose }) {
                     </p>
                 )}
             </div>
-        </div>
+        </div >
     )
 }
 
