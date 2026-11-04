@@ -203,7 +203,6 @@ export default function FixturesScreen() {
       {tab === 'completed' && (
         <div className="flex flex-col gap-8">
           <section>
-            <p className="text-xs tracking-widest text-floodlight/40 mb-3">RESULTS</p>
             {completed.length === 0 ? (
               <p className="text-floodlight/30 text-sm">No results yet.</p>
             ) : (
