@@ -176,7 +176,7 @@ export default function FixturesScreen() {
   )
   const live = sortedFixtures.filter((f) => f.status === 'live')
   const upcoming = sortedFixtures.filter((f) => f.status === 'scheduled')
-  const completed = sortedFixtures.filter((f) => f.status === 'completed')
+  const completed = sortedFixtures.filter((f) => f.status === 'completed').sort( (a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || ''))
 
   return (
     <div className="min-h-screen px-4 md:px-8 py-8 max-w-4xl mx-auto">
