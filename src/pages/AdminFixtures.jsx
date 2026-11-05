@@ -40,7 +40,7 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
 
 
   const updateOwnGoal = (patch) => {
-    setOwnGoals({...ownGoals,...patch})
+    setOwnGoals({ ...ownGoals, ...patch })
   }
 
   return (
@@ -155,16 +155,16 @@ function ResultEditor({ fixture, teamA, teamB, players, onSave, onCancel, onComp
 
             {/* own goals */}
             <div className="flex flex-col items-end gap-2 pt-2 border-t border-pitch-line/50">
-                  <div key={0} className="flex items-center gap-2">
-                    <span className='text-xs'>Own Goal</span>
-                    <input
-                      type="number"
-                      min="0"
-                      defaultValue={ownGoals[side] || 0}
-                      onChange={(e) => side == "A" ? updateOwnGoal({ "A": e.target.value }) : updateOwnGoal({ "B": e.target.value })}
-                      className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-live/40 text-xs text-center"
-                    />
-                  </div>
+              <div key={0} className="flex items-center gap-2">
+                <span className='text-xs'>Own Goal</span>
+                <input
+                  type="number"
+                  min="0"
+                  defaultValue={ownGoals[side] || 0}
+                  onChange={(e) => side == "A" ? updateOwnGoal({ "A": e.target.value }) : updateOwnGoal({ "B": e.target.value })}
+                  className="w-14 px-2 py-1.5 rounded-lg bg-pitch-900 border border-live/40 text-xs text-center"
+                />
+              </div>
             </div>
           </div>
         ))}
@@ -308,6 +308,9 @@ export default function AdminFixtures() {
     (a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '')
   )
 
+
+  const live = [...fixtures].filter((f) => f.status === 'live')
+
   return (
     <div className="min-h-screen px-4 md:px-8 py-6 max-w-4xl mx-auto flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -405,6 +408,84 @@ export default function AdminFixtures() {
       </div>
 
 
+      <div className="flex flex-col gap-3">
+        {live.map((f) => {
+          const a = teamById[f.teamA]
+          const b = teamById[f.teamB]
+          return (
+            <div key={f.id} className="rounded-xl border border-pitch-line bg-green-800/40 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
+                  <span className="text-sm font-semibold truncate">{a?.name ?? '—'}</span>
+                  <span className="font-mono text-gold tabular text-sm">
+                    {f.status === 'completed' ? `${f.scoreA} – ${f.scoreB}` : 'vs'}
+                  </span>
+                  <span className="text-sm font-semibold truncate">{b?.name ?? '—'}</span>
+                  {b && <img src={b.logoUrl} alt={b.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-floodlight/40">
+                  {f.round && <span>{f.round}</span>}
+                  {f.date && <span>{f.date}</span>}
+                  {f.time && <span>{f.time}</span>}
+                  <span
+                    className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wide ${f.status === 'completed'
+                      ? 'border-gold/40 text-gold'
+                      : f.status === 'live'
+                        ? 'border-live/40 text-live'
+                        : 'border-pitch-line text-floodlight/40'
+                      }`}
+                  >
+                    {f.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 mt-3">
+                {f.status !== 'live' && f.status !== 'completed' && (
+                  <button
+                    onClick={() => actions.setStatus(f.id, 'live')}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-live/50 text-live"
+                  >
+                    Mark live
+                  </button>
+                )}
+                <button
+                  onClick={() => setEditingId(editingId === f.id ? null : f.id)}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-pitch-line hover:border-gold/50 transition-colors"
+                >
+                  {f.status === 'completed' ? 'Edit result' : 'Enter result'}
+                </button>
+                <button
+                  onClick={() => actions.deleteFixture(f.id)}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-live/40 text-live/80"
+                >
+                  Delete
+                </button>
+              </div>
+
+              {editingId === f.id && (
+                <ResultEditor
+                  fixture={f}
+                  teamA={a}
+                  teamB={b}
+                  players={players}
+                  onCancel={() => setEditingId(null)}
+                  onComplete={async (result) => {
+                    await actions.setComplete(f.id)
+                    setEditingId(null)
+                  }}
+                  onSave={async (result) => {
+                    await actions.saveResult(f.id, result)
+                    setEditingId(null)
+                  }}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
 
       {/* fixture list */}
       <div className="flex flex-col gap-3">
@@ -416,8 +497,8 @@ export default function AdminFixtures() {
           const b = teamById[f.teamB]
           return (
             <div key={f.id} className="rounded-xl border border-pitch-line bg-pitch-800/40 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-1 w-full">
                   {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
                   <span className="text-sm font-semibold truncate">{a?.name ?? '—'}</span>
                   <span className="font-mono text-gold tabular text-sm">
