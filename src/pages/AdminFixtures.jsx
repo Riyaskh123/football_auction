@@ -415,7 +415,7 @@ export default function AdminFixtures() {
           return (
             <div key={f.id} className="rounded-xl border border-pitch-line bg-green-800/40 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center justify-between gap-1 md:gap-3 w-full md:w-auto">
                   {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
                   <span className="text-sm font-semibold truncate">{a?.name ?? '—'}</span>
                   <span className="font-mono text-gold tabular text-sm">
@@ -498,7 +498,7 @@ export default function AdminFixtures() {
           return (
             <div key={f.id} className="rounded-xl border border-pitch-line bg-pitch-800/40 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center justify-between gap-1 w-full">
+                <div className="flex items-center justify-between gap-1 md:gap-3 w-full md:w-auto">
                   {a && <img src={a.logoUrl} alt={a.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />}
                   <span className="text-sm font-semibold truncate">{a?.name ?? '—'}</span>
                   <span className="font-mono text-gold tabular text-sm">
