@@ -144,7 +144,7 @@ export function computeStandings(teams, fixtures) {
 
   return Object.values(table)
     .map((row) => ({ ...row, gd: row.gf - row.ga }))
-    .sort((a, b) => b.points - a.points || b.gd - a.gd || b.gf - a.gf)
+    .sort((a, b) => b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.team.name.localeCompare(b.team.name))
 }
 
 // Aggregates goals per player across all completed fixtures.
