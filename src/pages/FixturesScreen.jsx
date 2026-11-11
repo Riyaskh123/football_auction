@@ -119,8 +119,8 @@ function FixtureRow({ fixture, teamById, players }) {
           scorersB.length > 0 ||
           assistsA.length > 0 ||
           assistsB.length > 0 ||
-          fixture.ownGoal.A > 0 ||
-          fixture.ownGoal.B > 0) && (
+          (fixture.ownGoals && fixture.ownGoals.A > 0) ||
+          (fixture.ownGoals && fixture.ownGoals.B > 0)) && (
           <div className="flex items-start gap-2">
             <div className="flex-1 flex flex-col items-end gap-0.5">
               {scorersA.map((s, i) => (
