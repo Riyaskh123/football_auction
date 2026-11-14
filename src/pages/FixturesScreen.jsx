@@ -302,7 +302,8 @@ export default function FixturesScreen() {
                   <td className="py-3 pr-2 text-center font-mono tabular hidden md:table-cell">{row.gf}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular hidden md:table-cell">{row.ga}</td>
                   <td className="py-3 pr-2 text-center font-mono tabular">{row.gd}</td>
-                  <td className="py-3 pr-4 text-center font-mono tabular text-gold font-bold">{row.points}</td>
+                  <td className="py-2 pr-2 text-center  tabular font-bold">
+                    <span className="inline-flex justify-center items-center w-10 h-8 rounded bg-gold text-[17px] text-pitch-800">{row.points}</span></td>
                 </tr>
               ))}
             </tbody>
