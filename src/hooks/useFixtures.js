@@ -159,6 +159,7 @@ export function computeTopScorers(players, fixtures) {
     .map(([playerId, goals]) => ({ player: players.find((p) => p.id === playerId), goals }))
     .filter((row) => row.player)
     .sort((a, b) => b.goals - a.goals)
+    .slice(0, 15)
 }
 
 export function computeTopAssists(players, fixtures) {
